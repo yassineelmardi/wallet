@@ -17,6 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
 import { Colors, Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
 
 const MONTHS = [
   'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',

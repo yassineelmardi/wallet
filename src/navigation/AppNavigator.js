@@ -2,10 +2,10 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Text } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useApp } from '../context/AppContext';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
+import { Spacing, BorderRadius, FontSize } from '../theme/colors';
 
 // Screens
 import DashboardScreen from '../screens/DashboardScreen';
@@ -20,43 +20,37 @@ import AddMonthlySalaryScreen from '../screens/AddMonthlySalaryScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// Icônes textuelles (compatibles sans vector-icons natif sur web)
-const TabIcon = ({ name, focused }) => {
-  const icons = {
-    dashboard: focused ? '◉' : '○',
-    salary: focused ? '▲' : '△',
-    expenses: focused ? '▼' : '▽',
-    stats: focused ? '◈' : '◇',
-    settings: focused ? '⚙' : '⚙',
-  };
-  return (
-    <Text style={{ fontSize: 18, color: focused ? Colors.primary : Colors.textMuted }}>
-      {icons[name] || '○'}
-    </Text>
-  );
+const TAB_ICONS = {
+  dashboard: { active: '⬡', inactive: '⬡' },
+  salary:    { active: '↑', inactive: '↑' },
+  expenses:  { active: '↓', inactive: '↓' },
+  stats:     { active: '◈', inactive: '◇' },
+  settings:  { active: '⚙', inactive: '⚙' },
 };
+
+const TabIcon = ({ name, focused, color }) => (
+  <Text style={{ fontSize: 18, color }}>{focused ? TAB_ICONS[name].active : TAB_ICONS[name].inactive}</Text>
+);
 
 const MainTabs = () => {
   const { t } = useTranslation();
-  const { settings } = useApp();
-  const dark = settings.darkMode !== false;
-  const C = dark ? Colors : Colors;
+  const { colors } = useTheme();
 
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: C.surface,
-          borderTopColor: C.border,
+          backgroundColor: colors.tabBar,
+          borderTopColor: colors.tabBarBorder,
           borderTopWidth: 1,
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 6,
+          height: 64,
+          paddingBottom: 10,
+          paddingTop: 8,
         },
-        tabBarActiveTintColor: C.primary,
-        tabBarInactiveTintColor: C.textMuted,
-        tabBarLabelStyle: { fontSize: 10, fontWeight: '600' },
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textMuted,
+        tabBarLabelStyle: { fontSize: FontSize.xs, fontWeight: '700', letterSpacing: 0.3 },
       }}
     >
       <Tab.Screen
@@ -64,7 +58,7 @@ const MainTabs = () => {
         component={DashboardScreen}
         options={{
           tabBarLabel: t('nav.dashboard'),
-          tabBarIcon: ({ focused }) => <TabIcon name="dashboard" focused={focused} />,
+          tabBarIcon: ({ focused, color }) => <TabIcon name="dashboard" focused={focused} color={color} />,
         }}
       />
       <Tab.Screen
@@ -72,7 +66,7 @@ const MainTabs = () => {
         component={SalaryScreen}
         options={{
           tabBarLabel: 'Revenus',
-          tabBarIcon: ({ focused }) => <TabIcon name="salary" focused={focused} />,
+          tabBarIcon: ({ focused, color }) => <TabIcon name="salary" focused={focused} color={color} />,
         }}
       />
       <Tab.Screen
@@ -80,7 +74,7 @@ const MainTabs = () => {
         component={ExpensesScreen}
         options={{
           tabBarLabel: t('nav.expenses'),
-          tabBarIcon: ({ focused }) => <TabIcon name="expenses" focused={focused} />,
+          tabBarIcon: ({ focused, color }) => <TabIcon name="expenses" focused={focused} color={color} />,
         }}
       />
       <Tab.Screen
@@ -88,7 +82,7 @@ const MainTabs = () => {
         component={StatsScreen}
         options={{
           tabBarLabel: t('nav.stats'),
-          tabBarIcon: ({ focused }) => <TabIcon name="stats" focused={focused} />,
+          tabBarIcon: ({ focused, color }) => <TabIcon name="stats" focused={focused} color={color} />,
         }}
       />
       <Tab.Screen
@@ -96,7 +90,7 @@ const MainTabs = () => {
         component={SettingsScreen}
         options={{
           tabBarLabel: t('nav.settings'),
-          tabBarIcon: ({ focused }) => <TabIcon name="settings" focused={focused} />,
+          tabBarIcon: ({ focused, color }) => <TabIcon name="settings" focused={focused} color={color} />,
         }}
       />
     </Tab.Navigator>
@@ -104,9 +98,6 @@ const MainTabs = () => {
 };
 
 const AppNavigator = () => {
-  const { settings } = useApp();
-  const isRTL = settings.language === 'ar';
-
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>

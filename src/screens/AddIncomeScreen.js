@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
 import { Colors, Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
 
 const CATEGORIES = [
   { key: 'salary', icon: '💼' },

@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useApp } from '../context/AppContext';
 import { Colors, Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
 
 const MONTHS = [
   'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
