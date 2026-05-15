@@ -5,6 +5,8 @@ const KEYS = {
   FIXED_EXPENSES: '@wallet_fixed_expenses',
   VARIABLE_EXPENSES: '@wallet_variable_expenses',
   SETTINGS: '@wallet_settings',
+  GLOBAL_SALARY: '@wallet_global_salary',
+  MONTHLY_SALARIES: '@wallet_monthly_salaries',
 };
 
 // ─── Revenus ────────────────────────────────────────────────────────────────
@@ -130,5 +132,54 @@ export const resetAllData = async () => {
     KEYS.INCOME,
     KEYS.FIXED_EXPENSES,
     KEYS.VARIABLE_EXPENSES,
+    KEYS.GLOBAL_SALARY,
+    KEYS.MONTHLY_SALARIES,
   ]);
+};
+
+// ─── Salaire global ─────────────────────────────────────────────────────────
+
+export const getGlobalSalary = async () => {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.GLOBAL_SALARY);
+    return data ? JSON.parse(data) : null;
+  } catch {
+    return null;
+  }
+};
+
+export const saveGlobalSalary = async (salary) => {
+  await AsyncStorage.setItem(KEYS.GLOBAL_SALARY, JSON.stringify(salary));
+};
+
+export const deleteGlobalSalary = async () => {
+  await AsyncStorage.removeItem(KEYS.GLOBAL_SALARY);
+};
+
+// ─── Salaires mensuels ───────────────────────────────────────────────────────
+
+export const getMonthlySalaries = async () => {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.MONTHLY_SALARIES);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+};
+
+export const saveMonthlySalaries = async (list) => {
+  await AsyncStorage.setItem(KEYS.MONTHLY_SALARIES, JSON.stringify(list));
+};
+
+export const upsertMonthlySalary = async (item) => {
+  const list = await getMonthlySalaries();
+  const idx = list.findIndex((i) => i.id === item.id);
+  if (idx !== -1) list[idx] = item;
+  else list.push(item);
+  await saveMonthlySalaries(list);
+};
+
+export const deleteMonthlySalary = async (id) => {
+  const list = await getMonthlySalaries();
+  await saveMonthlySalaries(list.filter((i) => i.id !== id));
 };

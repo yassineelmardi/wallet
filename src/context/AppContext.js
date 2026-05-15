@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import i18n from '../locales/i18n';
 import * as storage from '../storage/storage';
 
@@ -9,6 +9,8 @@ export const AppProvider = ({ children }) => {
   const [fixedExpenses, setFixedExpenses] = useState([]);
   const [variableExpenses, setVariableExpenses] = useState([]);
   const [settings, setSettings] = useState({ language: 'fr', darkMode: true, currency: '€' });
+  const [globalSalary, setGlobalSalary] = useState(null);
+  const [monthlySalaries, setMonthlySalaries] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Chargement initial
@@ -18,16 +20,20 @@ export const AppProvider = ({ children }) => {
 
   const loadAll = async () => {
     setLoading(true);
-    const [inc, fixed, variable, sett] = await Promise.all([
+    const [inc, fixed, variable, sett, gSalary, mSalaries] = await Promise.all([
       storage.getIncome(),
       storage.getFixedExpenses(),
       storage.getVariableExpenses(),
       storage.getSettings(),
+      storage.getGlobalSalary(),
+      storage.getMonthlySalaries(),
     ]);
     setIncome(inc);
     setFixedExpenses(fixed);
     setVariableExpenses(variable);
     setSettings(sett);
+    setGlobalSalary(gSalary);
+    setMonthlySalaries(mSalaries);
     i18n.changeLanguage(sett.language);
     setLoading(false);
   };
@@ -92,16 +98,61 @@ export const AppProvider = ({ children }) => {
     if (newSettings.language) i18n.changeLanguage(newSettings.language);
   };
 
+  // ─── Salaire global ────────────────────────────────────────────────────────
+
+  const updateGlobalSalary = async (salary) => {
+    await storage.saveGlobalSalary(salary);
+    setGlobalSalary(salary);
+  };
+
+  const removeGlobalSalary = async () => {
+    await storage.deleteGlobalSalary();
+    setGlobalSalary(null);
+  };
+
+  // ─── Salaires mensuels ────────────────────────────────────────────────────
+
+  const setSalaryForMonth = async (item) => {
+    await storage.upsertMonthlySalary(item);
+    setMonthlySalaries((prev) => {
+      const idx = prev.findIndex((i) => i.id === item.id);
+      if (idx !== -1) {
+        const next = [...prev];
+        next[idx] = item;
+        return next;
+      }
+      return [...prev, item];
+    });
+  };
+
+  const removeMonthlySalary = async (id) => {
+    await storage.deleteMonthlySalary(id);
+    setMonthlySalaries((prev) => prev.filter((i) => i.id !== id));
+  };
+
   const resetData = async () => {
     await storage.resetAllData();
     setIncome([]);
     setFixedExpenses([]);
     setVariableExpenses([]);
+    setGlobalSalary(null);
+    setMonthlySalaries([]);
   };
 
   // ─── Calculs ──────────────────────────────────────────────────────────────
 
-  const totalIncome = income.reduce((sum, i) => sum + parseFloat(i.amount || 0), 0);
+  const currentMonthSalary = useMemo(() => {
+    const now = new Date();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+    const monthly = monthlySalaries.find((s) => s.month === month && s.year === year);
+    if (monthly) return { amount: parseFloat(monthly.amount || 0), type: 'monthly', data: monthly };
+    if (globalSalary) return { amount: parseFloat(globalSalary.amount || 0), type: 'global', data: globalSalary };
+    return { amount: 0, type: 'none', data: null };
+  }, [globalSalary, monthlySalaries]);
+
+  const totalAdditionalIncome = income.reduce((sum, i) => sum + parseFloat(i.amount || 0), 0);
+  const totalIncome = currentMonthSalary.amount + totalAdditionalIncome;
   const totalFixed = fixedExpenses.reduce((sum, i) => sum + parseFloat(i.amount || 0), 0);
   const totalVariable = variableExpenses.reduce((sum, i) => sum + parseFloat(i.amount || 0), 0);
   const balance = totalIncome - totalFixed - totalVariable;
@@ -117,7 +168,11 @@ export const AppProvider = ({ children }) => {
         fixedExpenses,
         variableExpenses,
         settings,
+        globalSalary,
+        monthlySalaries,
+        currentMonthSalary,
         totalIncome,
+        totalAdditionalIncome,
         totalFixed,
         totalVariable,
         balance,
@@ -132,6 +187,10 @@ export const AppProvider = ({ children }) => {
         updateVariable,
         removeVariable,
         updateSettings,
+        updateGlobalSalary,
+        removeGlobalSalary,
+        setSalaryForMonth,
+        removeMonthlySalary,
         resetData,
         reload: loadAll,
       }}

@@ -9,12 +9,13 @@ import { Colors } from '../theme/colors';
 
 // Screens
 import DashboardScreen from '../screens/DashboardScreen';
-import IncomeScreen from '../screens/IncomeScreen';
+import SalaryScreen from '../screens/SalaryScreen';
 import ExpensesScreen from '../screens/ExpensesScreen';
 import StatsScreen from '../screens/StatsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import AddIncomeScreen from '../screens/AddIncomeScreen';
 import AddExpenseScreen from '../screens/AddExpenseScreen';
+import AddMonthlySalaryScreen from '../screens/AddMonthlySalaryScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -23,7 +24,7 @@ const Stack = createNativeStackNavigator();
 const TabIcon = ({ name, focused }) => {
   const icons = {
     dashboard: focused ? '◉' : '○',
-    income: focused ? '▲' : '△',
+    salary: focused ? '▲' : '△',
     expenses: focused ? '▼' : '▽',
     stats: focused ? '◈' : '◇',
     settings: focused ? '⚙' : '⚙',
@@ -67,11 +68,11 @@ const MainTabs = () => {
         }}
       />
       <Tab.Screen
-        name="Income"
-        component={IncomeScreen}
+        name="Salary"
+        component={SalaryScreen}
         options={{
-          tabBarLabel: t('nav.income'),
-          tabBarIcon: ({ focused }) => <TabIcon name="income" focused={focused} />,
+          tabBarLabel: 'Revenus',
+          tabBarIcon: ({ focused }) => <TabIcon name="salary" focused={focused} />,
         }}
       />
       <Tab.Screen
@@ -118,6 +119,11 @@ const AppNavigator = () => {
         <Stack.Screen
           name="AddExpense"
           component={AddExpenseScreen}
+          options={{ presentation: 'modal' }}
+        />
+        <Stack.Screen
+          name="AddMonthlySalary"
+          component={AddMonthlySalaryScreen}
           options={{ presentation: 'modal' }}
         />
       </Stack.Navigator>

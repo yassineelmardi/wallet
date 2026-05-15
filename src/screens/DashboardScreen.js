@@ -25,11 +25,13 @@ const DashboardScreen = () => {
   const { t } = useTranslation();
   const {
     totalIncome,
+    totalAdditionalIncome,
     totalFixed,
     totalVariable,
     balance,
     budgetUsedPercent,
     settings,
+    currentMonthSalary,
   } = useApp();
 
   const C = Colors;
@@ -49,6 +51,43 @@ const DashboardScreen = () => {
           </Text>
           <Text style={styles.headerSub}>{t('dashboard.thisMonth')}</Text>
         </LinearGradient>
+
+        {/* Salary info card */}
+        <View style={styles.salaryCard}>
+          <View style={styles.salaryLeft}>
+            <Text style={styles.salaryLabel}>Salaire ce mois-ci</Text>
+            <Text style={styles.salaryAmount}>
+              {currentMonthSalary.amount.toFixed(2)} {cur}
+            </Text>
+          </View>
+          <View style={[
+            styles.salaryBadge,
+            {
+              backgroundColor: currentMonthSalary.type === 'monthly'
+                ? C.accentYellow + '22'
+                : currentMonthSalary.type === 'global'
+                ? C.primary + '22'
+                : C.textMuted + '22',
+            },
+          ]}>
+            <Text style={[
+              styles.salaryBadgeText,
+              {
+                color: currentMonthSalary.type === 'monthly'
+                  ? C.accentYellow
+                  : currentMonthSalary.type === 'global'
+                  ? C.primary
+                  : C.textMuted,
+              },
+            ]}>
+              {currentMonthSalary.type === 'monthly'
+                ? 'MENSUEL'
+                : currentMonthSalary.type === 'global'
+                ? 'GLOBAL'
+                : 'NON DÉFINI'}
+            </Text>
+          </View>
+        </View>
 
         {/* Progress bar */}
         <View style={styles.progressCard}>
@@ -79,6 +118,14 @@ const DashboardScreen = () => {
             color={C.success}
             currency={cur}
           />
+          {totalAdditionalIncome > 0 && (
+            <SummaryCard
+              label="Revenus supplémentaires"
+              amount={totalAdditionalIncome}
+              color={C.primaryLight}
+              currency={cur}
+            />
+          )}
           <SummaryCard
             label={t('dashboard.fixedExpenses')}
             amount={totalFixed}
@@ -122,6 +169,28 @@ const styles = StyleSheet.create({
   headerLabel: { color: '#ffffffcc', fontSize: FontSize.sm, marginBottom: Spacing.xs },
   headerBalance: { fontSize: FontSize.xxxl, fontWeight: '800', marginBottom: Spacing.xs },
   headerSub: { color: '#ffffff88', fontSize: FontSize.xs },
+  salaryCard: {
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.md,
+    backgroundColor: Colors.card,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderLeftWidth: 4,
+    borderLeftColor: Colors.primary,
+    ...Shadow.sm,
+  },
+  salaryLeft: {},
+  salaryLabel: { color: Colors.textSecondary, fontSize: FontSize.xs, marginBottom: 4 },
+  salaryAmount: { color: Colors.textPrimary, fontSize: FontSize.lg, fontWeight: '800' },
+  salaryBadge: {
+    borderRadius: BorderRadius.full,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4,
+  },
+  salaryBadgeText: { fontSize: FontSize.xs, fontWeight: '700', letterSpacing: 0.8 },
   progressCard: {
     margin: Spacing.md,
     backgroundColor: Colors.card,
