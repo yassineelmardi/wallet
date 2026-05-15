@@ -36,8 +36,9 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
   const [label, setLabel] = useState(editItem ? editItem.label || '' : '');
 
   const { setSalaryForMonth, monthlySalaries, settings } = useApp();
+  const { colors: C } = useTheme();
+  const styles = makeStyles(C);
   const cur = settings.currency || '€';
-  const C = Colors;
 
   const handleSave = () => {
     const val = parseFloat(amount);
@@ -87,8 +88,6 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
     navigation.goBack();
   };
 
-  const { colors: C } = useTheme();
-  const styles = makeStyles(C);
   return (
     <SafeAreaView style={styles.safe}>
       {/* Header */}
