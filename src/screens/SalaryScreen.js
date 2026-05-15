@@ -28,7 +28,7 @@ const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9
 
 // ─── Modal salaire global ────────────────────────────────────────────────────
 
-const GlobalSalaryModal = ({ visible, onClose, onSave, initial }) => {
+const GlobalSalaryModal = ({ visible, onClose, onSave, initial, C, styles }) => {
   const [amount, setAmount] = useState('');
   const [label, setLabel] = useState('');
 
@@ -445,6 +445,8 @@ const SalaryScreen = ({ navigation }) => {
         onClose={() => setGlobalModalVisible(false)}
         onSave={handleSaveGlobal}
         initial={globalSalary}
+        C={C}
+        styles={styles}
       />
     </SafeAreaView>
   );
