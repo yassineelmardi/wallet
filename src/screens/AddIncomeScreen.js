@@ -51,6 +51,8 @@ const AddIncomeScreen = () => {
     navigation.goBack();
   };
 
+  const { colors: C } = useTheme();
+  const styles = makeStyles(C);
   return (
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
@@ -73,7 +75,7 @@ const AddIncomeScreen = () => {
             <TextInput
               style={styles.amountInput}
               placeholder="0.00"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={C.textMuted}
               keyboardType="numeric"
               value={amount}
               onChangeText={setAmount}
@@ -91,7 +93,7 @@ const AddIncomeScreen = () => {
                 onPress={() => setCategory(c.key)}
               >
                 <Text style={styles.catIcon}>{c.icon}</Text>
-                <Text style={[styles.catLabel, category === c.key && { color: Colors.primary }]}>
+                <Text style={[styles.catLabel, category === c.key && { color: C.primary }]}>
                   {t(`income.${c.key}`)}
                 </Text>
               </TouchableOpacity>
@@ -103,7 +105,7 @@ const AddIncomeScreen = () => {
           <TextInput
             style={styles.input}
             placeholder={t('income.description')}
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={C.textMuted}
             value={description}
             onChangeText={setDescription}
           />
@@ -113,7 +115,7 @@ const AddIncomeScreen = () => {
           <TextInput
             style={styles.input}
             placeholder="YYYY-MM-DD"
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={C.textMuted}
             value={date}
             onChangeText={setDate}
           />
@@ -124,15 +126,15 @@ const AddIncomeScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background },
+const makeStyles = (C) => StyleSheet.create({
+  safe: { flex: 1, backgroundColor: C.background },
   scroll: { padding: Spacing.md, paddingBottom: Spacing.xxl },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.xl, paddingTop: Spacing.sm },
-  cancel: { color: Colors.textSecondary, fontSize: FontSize.md },
-  title: { color: Colors.textPrimary, fontSize: FontSize.lg, fontWeight: '700' },
-  saveBtn: { color: Colors.primary, fontSize: FontSize.md, fontWeight: '700' },
+  cancel: { color: C.textSecondary, fontSize: FontSize.md },
+  title: { color: C.textPrimary, fontSize: FontSize.lg, fontWeight: '700' },
+  saveBtn: { color: C.primary, fontSize: FontSize.md, fontWeight: '700' },
   amountCard: {
-    backgroundColor: Colors.card,
+    backgroundColor: C.card,
     borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
     flexDirection: 'row',
@@ -141,31 +143,31 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
     ...Shadow.md,
   },
-  amountCur: { color: Colors.success, fontSize: FontSize.xxxl, fontWeight: '300', marginRight: Spacing.sm },
-  amountInput: { color: Colors.success, fontSize: FontSize.xxxl, fontWeight: '800', minWidth: 120 },
-  label: { color: Colors.textSecondary, fontSize: FontSize.sm, marginBottom: Spacing.sm, marginTop: Spacing.md, textTransform: 'uppercase', letterSpacing: 0.5 },
+  amountCur: { color: C.success, fontSize: FontSize.xxxl, fontWeight: '300', marginRight: Spacing.sm },
+  amountInput: { color: C.success, fontSize: FontSize.xxxl, fontWeight: '800', minWidth: 120 },
+  label: { color: C.textSecondary, fontSize: FontSize.sm, marginBottom: Spacing.sm, marginTop: Spacing.md, textTransform: 'uppercase', letterSpacing: 0.5 },
   catGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, marginBottom: Spacing.sm },
   catBtn: {
     flex: 1,
     minWidth: '45%',
-    backgroundColor: Colors.card,
+    backgroundColor: C.card,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     alignItems: 'center',
     borderWidth: 2,
     borderColor: 'transparent',
   },
-  catBtnActive: { borderColor: Colors.primary, backgroundColor: Colors.cardAlt },
+  catBtnActive: { borderColor: C.primary, backgroundColor: C.cardAlt },
   catIcon: { fontSize: 28, marginBottom: Spacing.xs },
-  catLabel: { color: Colors.textSecondary, fontSize: FontSize.sm, fontWeight: '600' },
+  catLabel: { color: C.textSecondary, fontSize: FontSize.sm, fontWeight: '600' },
   input: {
-    backgroundColor: Colors.card,
+    backgroundColor: C.card,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
-    color: Colors.textPrimary,
+    color: C.textPrimary,
     fontSize: FontSize.md,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: C.border,
   },
 });
 

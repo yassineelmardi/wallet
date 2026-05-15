@@ -67,7 +67,7 @@ const GlobalSalaryModal = ({ visible, onClose, onSave, initial }) => {
             value={amount}
             onChangeText={setAmount}
             placeholder="ex: 3000"
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={C.textMuted}
             keyboardType="numeric"
             autoFocus
           />
@@ -78,7 +78,7 @@ const GlobalSalaryModal = ({ visible, onClose, onSave, initial }) => {
             value={label}
             onChangeText={setLabel}
             placeholder="ex: Salaire CDI"
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={C.textMuted}
           />
 
           <View style={styles.modalActions}>
@@ -113,7 +113,8 @@ const SalaryScreen = ({ navigation }) => {
 
   const [activeTab, setActiveTab] = useState('salary');
   const [globalModalVisible, setGlobalModalVisible] = useState(false);
-  const C = Colors;
+  const { colors: C } = useTheme();
+  const styles = makeStyles(C);
   const cur = settings.currency || '€';
 
   // ─── Handlers ──────────────────────────────────────────────────────────────
@@ -449,8 +450,8 @@ const SalaryScreen = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background },
+const makeStyles = (C) => StyleSheet.create({
+  safe: { flex: 1, backgroundColor: C.background },
   listContent: { flexGrow: 1 },
 
   // Header gradient
@@ -475,13 +476,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: Spacing.md,
     marginTop: Spacing.md,
-    backgroundColor: Colors.surface,
+    backgroundColor: C.surface,
     borderRadius: BorderRadius.lg,
     padding: 4,
   },
   tab: { flex: 1, paddingVertical: Spacing.sm, alignItems: 'center', borderRadius: BorderRadius.md },
-  tabActive: { backgroundColor: Colors.primary },
-  tabText: { color: Colors.textMuted, fontSize: FontSize.sm, fontWeight: '600' },
+  tabActive: { backgroundColor: C.primary },
+  tabText: { color: C.textMuted, fontSize: FontSize.sm, fontWeight: '600' },
   tabTextActive: { color: '#fff' },
 
   // Section
@@ -493,60 +494,60 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  sectionTitle: { color: Colors.textSecondary, fontSize: FontSize.sm, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 },
+  sectionTitle: { color: C.textSecondary, fontSize: FontSize.sm, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 },
   totalBadge: {
-    backgroundColor: Colors.success + '22',
+    backgroundColor: C.success + '22',
     borderRadius: BorderRadius.full,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 3,
   },
-  totalBadgeText: { color: Colors.success, fontSize: FontSize.xs, fontWeight: '700' },
+  totalBadgeText: { color: C.success, fontSize: FontSize.xs, fontWeight: '700' },
 
   // Global salary card
   globalCard: {
     marginHorizontal: Spacing.md,
-    backgroundColor: Colors.card,
+    backgroundColor: C.card,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     borderLeftWidth: 4,
-    borderLeftColor: Colors.primary,
+    borderLeftColor: C.primary,
     ...Shadow.sm,
   },
   globalLeft: { flex: 1 },
-  globalAmount: { color: Colors.textPrimary, fontSize: FontSize.xl, fontWeight: '800' },
-  globalLabel: { color: Colors.textMuted, fontSize: FontSize.xs, marginTop: 2 },
+  globalAmount: { color: C.textPrimary, fontSize: FontSize.xl, fontWeight: '800' },
+  globalLabel: { color: C.textMuted, fontSize: FontSize.xs, marginTop: 2 },
   globalActions: { flexDirection: 'row', gap: Spacing.xs },
 
   // Add global button
   addGlobalBtn: {
     marginHorizontal: Spacing.md,
     borderWidth: 1.5,
-    borderColor: Colors.primary,
+    borderColor: C.primary,
     borderRadius: BorderRadius.lg,
     borderStyle: 'dashed',
     padding: Spacing.md,
     alignItems: 'center',
   },
-  addGlobalBtnText: { color: Colors.primary, fontSize: FontSize.sm, fontWeight: '600' },
+  addGlobalBtnText: { color: C.primary, fontSize: FontSize.sm, fontWeight: '600' },
 
   // Monthly card
   monthlyCard: {
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.sm,
-    backgroundColor: Colors.card,
+    backgroundColor: C.card,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     ...Shadow.sm,
   },
-  monthlyCardActive: { borderWidth: 1, borderColor: Colors.accentYellow + '66' },
+  monthlyCardActive: { borderWidth: 1, borderColor: C.accentYellow + '66' },
   monthlyLeft: { flex: 1 },
-  monthlyPeriod: { color: Colors.textPrimary, fontSize: FontSize.sm, fontWeight: '600' },
-  currentTag: { color: Colors.accentYellow, fontSize: FontSize.xs },
-  monthlyNote: { color: Colors.textMuted, fontSize: FontSize.xs, marginTop: 2 },
+  monthlyPeriod: { color: C.textPrimary, fontSize: FontSize.sm, fontWeight: '600' },
+  currentTag: { color: C.accentYellow, fontSize: FontSize.xs },
+  monthlyNote: { color: C.textMuted, fontSize: FontSize.xs, marginTop: 2 },
   monthlyAmount: { fontSize: FontSize.md, fontWeight: '700', marginRight: Spacing.sm },
   monthlyActions: { flexDirection: 'row', gap: 4 },
 
@@ -554,7 +555,7 @@ const styles = StyleSheet.create({
   incomeCard: {
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.sm,
-    backgroundColor: Colors.card,
+    backgroundColor: C.card,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     flexDirection: 'row',
@@ -565,18 +566,18 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: BorderRadius.md,
-    backgroundColor: Colors.surface,
+    backgroundColor: C.surface,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: Spacing.sm,
   },
   incomeIcon: { fontSize: 18 },
   incomeLeft: { flex: 1 },
-  incomeCategory: { color: Colors.textPrimary, fontSize: FontSize.sm, fontWeight: '600', textTransform: 'capitalize' },
-  incomeDesc: { color: Colors.textMuted, fontSize: FontSize.xs, marginTop: 2 },
+  incomeCategory: { color: C.textPrimary, fontSize: FontSize.sm, fontWeight: '600', textTransform: 'capitalize' },
+  incomeDesc: { color: C.textMuted, fontSize: FontSize.xs, marginTop: 2 },
   incomeRight: { alignItems: 'flex-end', marginRight: Spacing.sm },
   incomeAmount: { fontSize: FontSize.sm, fontWeight: '700' },
-  incomeDate: { color: Colors.textMuted, fontSize: FontSize.xs, marginTop: 2 },
+  incomeDate: { color: C.textMuted, fontSize: FontSize.xs, marginTop: 2 },
 
   // Action buttons
   actionBtn: {
@@ -585,14 +586,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionEdit: { fontSize: 14, color: Colors.primary },
-  actionDelete: { fontSize: 14, color: Colors.error },
+  actionEdit: { fontSize: 14, color: C.primary },
+  actionDelete: { fontSize: 14, color: C.error },
 
   // Empty states
   emptyWrap: { alignItems: 'center', paddingVertical: Spacing.xxl, paddingHorizontal: Spacing.xl },
   emptyIcon: { fontSize: 40, marginBottom: Spacing.md },
-  emptyText: { color: Colors.textSecondary, fontSize: FontSize.md, fontWeight: '600', marginBottom: Spacing.xs },
-  emptyHint: { color: Colors.textMuted, fontSize: FontSize.xs, textAlign: 'center' },
+  emptyText: { color: C.textSecondary, fontSize: FontSize.md, fontWeight: '600', marginBottom: Spacing.xs },
+  emptyHint: { color: C.textMuted, fontSize: FontSize.xs, textAlign: 'center' },
 
   // FAB
   fab: {
@@ -602,7 +603,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: Colors.primary,
+    backgroundColor: C.primary,
     alignItems: 'center',
     justifyContent: 'center',
     ...Shadow.lg,
@@ -616,21 +617,21 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalSheet: {
-    backgroundColor: Colors.surface,
+    backgroundColor: C.surface,
     borderTopLeftRadius: BorderRadius.xl,
     borderTopRightRadius: BorderRadius.xl,
     padding: Spacing.xl,
     paddingBottom: Spacing.xxl,
   },
   modalTitle: {
-    color: Colors.textPrimary,
+    color: C.textPrimary,
     fontSize: FontSize.lg,
     fontWeight: '700',
     marginBottom: Spacing.lg,
     textAlign: 'center',
   },
   inputLabel: {
-    color: Colors.textSecondary,
+    color: C.textSecondary,
     fontSize: FontSize.xs,
     marginBottom: Spacing.xs,
     marginTop: Spacing.sm,
@@ -638,13 +639,13 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   input: {
-    backgroundColor: Colors.card,
+    backgroundColor: C.card,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
-    color: Colors.textPrimary,
+    color: C.textPrimary,
     fontSize: FontSize.md,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: C.border,
   },
   modalActions: {
     flexDirection: 'row',
@@ -656,15 +657,15 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: C.border,
     alignItems: 'center',
   },
-  btnCancelText: { color: Colors.textSecondary, fontWeight: '600' },
+  btnCancelText: { color: C.textSecondary, fontWeight: '600' },
   btnSave: {
     flex: 1,
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
-    backgroundColor: Colors.primary,
+    backgroundColor: C.primary,
     alignItems: 'center',
   },
   btnSaveText: { color: '#fff', fontWeight: '700' },

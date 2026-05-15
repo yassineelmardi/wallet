@@ -46,7 +46,7 @@ const AddExpenseScreen = () => {
 
   const { addFixed, addVariable } = useApp();
   const categories = isFixed ? FIXED_CATS : VARIABLE_CATS;
-  const accentColor = isFixed ? Colors.accentYellow : Colors.accentWarn;
+  const accentColor = isFixed ? C.accentYellow : C.accentWarn;
 
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
@@ -73,6 +73,8 @@ const AddExpenseScreen = () => {
     navigation.goBack();
   };
 
+  const { colors: C } = useTheme();
+  const styles = makeStyles(C);
   return (
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
@@ -97,7 +99,7 @@ const AddExpenseScreen = () => {
             <TextInput
               style={[styles.amountInput, { color: accentColor }]}
               placeholder="0.00"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={C.textMuted}
               keyboardType="numeric"
               value={amount}
               onChangeText={setAmount}
@@ -111,7 +113,7 @@ const AddExpenseScreen = () => {
             {categories.map((c) => (
               <TouchableOpacity
                 key={c.key}
-                style={[styles.catBtn, category === c.key && { borderColor: accentColor, backgroundColor: Colors.cardAlt }]}
+                style={[styles.catBtn, category === c.key && { borderColor: accentColor, backgroundColor: C.cardAlt }]}
                 onPress={() => setCategory(c.key)}
               >
                 <Text style={styles.catIcon}>{c.icon}</Text>
@@ -127,7 +129,7 @@ const AddExpenseScreen = () => {
           <TextInput
             style={styles.input}
             placeholder={t('expenses.description')}
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor={C.textMuted}
             value={description}
             onChangeText={setDescription}
           />
@@ -139,7 +141,7 @@ const AddExpenseScreen = () => {
               <TextInput
                 style={styles.input}
                 placeholder="YYYY-MM-DD"
-                placeholderTextColor={Colors.textMuted}
+                placeholderTextColor={C.textMuted}
                 value={date}
                 onChangeText={setDate}
               />
@@ -151,15 +153,15 @@ const AddExpenseScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background },
+const makeStyles = (C) => StyleSheet.create({
+  safe: { flex: 1, backgroundColor: C.background },
   scroll: { padding: Spacing.md, paddingBottom: Spacing.xxl },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.xl, paddingTop: Spacing.sm },
-  cancel: { color: Colors.textSecondary, fontSize: FontSize.md },
-  title: { color: Colors.textPrimary, fontSize: FontSize.lg, fontWeight: '700' },
+  cancel: { color: C.textSecondary, fontSize: FontSize.md },
+  title: { color: C.textPrimary, fontSize: FontSize.lg, fontWeight: '700' },
   saveBtn: { fontSize: FontSize.md, fontWeight: '700' },
   amountCard: {
-    backgroundColor: Colors.card,
+    backgroundColor: C.card,
     borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
     flexDirection: 'row',
@@ -170,12 +172,12 @@ const styles = StyleSheet.create({
   },
   amountCur: { fontSize: FontSize.xxxl, fontWeight: '300', marginRight: Spacing.sm },
   amountInput: { fontSize: FontSize.xxxl, fontWeight: '800', minWidth: 120 },
-  label: { color: Colors.textSecondary, fontSize: FontSize.sm, marginBottom: Spacing.sm, marginTop: Spacing.md, textTransform: 'uppercase', letterSpacing: 0.5 },
+  label: { color: C.textSecondary, fontSize: FontSize.sm, marginBottom: Spacing.sm, marginTop: Spacing.md, textTransform: 'uppercase', letterSpacing: 0.5 },
   catGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, marginBottom: Spacing.sm },
   catBtn: {
     flex: 1,
     minWidth: '45%',
-    backgroundColor: Colors.card,
+    backgroundColor: C.card,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     alignItems: 'center',
@@ -183,15 +185,15 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   catIcon: { fontSize: 28, marginBottom: Spacing.xs },
-  catLabel: { color: Colors.textSecondary, fontSize: FontSize.sm, fontWeight: '600' },
+  catLabel: { color: C.textSecondary, fontSize: FontSize.sm, fontWeight: '600' },
   input: {
-    backgroundColor: Colors.card,
+    backgroundColor: C.card,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
-    color: Colors.textPrimary,
+    color: C.textPrimary,
     fontSize: FontSize.md,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: C.border,
   },
 });
 

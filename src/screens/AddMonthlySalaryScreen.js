@@ -87,6 +87,8 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
     navigation.goBack();
   };
 
+  const { colors: C } = useTheme();
+  const styles = makeStyles(C);
   return (
     <SafeAreaView style={styles.safe}>
       {/* Header */}
@@ -117,7 +119,7 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
                 value={amount}
                 onChangeText={setAmount}
                 placeholder="0.00"
-                placeholderTextColor={Colors.textMuted}
+                placeholderTextColor={C.textMuted}
                 keyboardType="numeric"
                 autoFocus={!editItem}
               />
@@ -192,7 +194,7 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
               value={label}
               onChangeText={setLabel}
               placeholder="ex: Prime incluse, congé sans solde…"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={C.textMuted}
               multiline
             />
           </View>
@@ -203,8 +205,8 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background },
+const makeStyles = (C) => StyleSheet.create({
+  safe: { flex: 1, backgroundColor: C.background },
   scroll: { padding: Spacing.md, paddingBottom: Spacing.xxl },
 
   // Header
@@ -215,43 +217,43 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: C.border,
   },
   headerBtn: { minWidth: 70 },
-  headerTitle: { color: Colors.textPrimary, fontSize: FontSize.md, fontWeight: '700' },
-  cancelText: { color: Colors.textMuted, fontSize: FontSize.sm },
-  saveText: { color: Colors.primary, fontSize: FontSize.sm, fontWeight: '700', textAlign: 'right' },
+  headerTitle: { color: C.textPrimary, fontSize: FontSize.md, fontWeight: '700' },
+  cancelText: { color: C.textMuted, fontSize: FontSize.sm },
+  saveText: { color: C.primary, fontSize: FontSize.sm, fontWeight: '700', textAlign: 'right' },
 
   // Amount section
   amountSection: {
-    backgroundColor: Colors.card,
+    backgroundColor: C.card,
     borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
     alignItems: 'center',
     marginBottom: Spacing.md,
     ...Shadow.md,
   },
-  amountLabel: { color: Colors.textSecondary, fontSize: FontSize.sm, marginBottom: Spacing.md },
+  amountLabel: { color: C.textSecondary, fontSize: FontSize.sm, marginBottom: Spacing.md },
   amountRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
   amountInput: {
-    color: Colors.textPrimary,
+    color: C.textPrimary,
     fontSize: 42,
     fontWeight: '800',
     minWidth: 150,
     textAlign: 'center',
   },
-  amountCurrency: { color: Colors.textMuted, fontSize: FontSize.xl, fontWeight: '600' },
+  amountCurrency: { color: C.textMuted, fontSize: FontSize.xl, fontWeight: '600' },
 
   // Cards
   card: {
-    backgroundColor: Colors.card,
+    backgroundColor: C.card,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.md,
     ...Shadow.sm,
   },
   cardLabel: {
-    color: Colors.textSecondary,
+    color: C.textSecondary,
     fontSize: FontSize.xs,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -269,13 +271,13 @@ const styles = StyleSheet.create({
     width: '22%',
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.md,
-    backgroundColor: Colors.surface,
+    backgroundColor: C.surface,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: C.border,
   },
-  monthBtnActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-  monthBtnText: { color: Colors.textMuted, fontSize: FontSize.xs, fontWeight: '600' },
+  monthBtnActive: { backgroundColor: C.primary, borderColor: C.primary },
+  monthBtnText: { color: C.textMuted, fontSize: FontSize.xs, fontWeight: '600' },
   monthBtnTextActive: { color: '#fff' },
 
   // Year row
@@ -289,32 +291,32 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.surface,
+    backgroundColor: C.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: C.border,
   },
-  yearBtnText: { color: Colors.primary, fontSize: FontSize.xl, fontWeight: '700' },
-  yearValue: { color: Colors.textPrimary, fontSize: FontSize.xxl, fontWeight: '800', minWidth: 80, textAlign: 'center' },
+  yearBtnText: { color: C.primary, fontSize: FontSize.xl, fontWeight: '700' },
+  yearValue: { color: C.textPrimary, fontSize: FontSize.xxl, fontWeight: '800', minWidth: 80, textAlign: 'center' },
 
   // Preview
   previewCard: {
-    backgroundColor: Colors.primary + '15',
+    backgroundColor: C.primary + '15',
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     alignItems: 'center',
     marginBottom: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.primary + '44',
+    borderColor: C.primary + '44',
   },
-  previewLabel: { color: Colors.textMuted, fontSize: FontSize.xs, marginBottom: 4 },
-  previewValue: { color: Colors.primary, fontSize: FontSize.lg, fontWeight: '700' },
-  previewAmount: { color: Colors.success, fontSize: FontSize.md, fontWeight: '700', marginTop: 4 },
+  previewLabel: { color: C.textMuted, fontSize: FontSize.xs, marginBottom: 4 },
+  previewValue: { color: C.primary, fontSize: FontSize.lg, fontWeight: '700' },
+  previewAmount: { color: C.success, fontSize: FontSize.md, fontWeight: '700', marginTop: 4 },
 
   // Note input
   noteInput: {
-    color: Colors.textPrimary,
+    color: C.textPrimary,
     fontSize: FontSize.sm,
     minHeight: 60,
     textAlignVertical: 'top',
