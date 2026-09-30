@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
 import { Colors, Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
 import { useTheme } from '../theme/ThemeContext';
+import { parsePositiveAmount } from '../utils/money';
 
 const MONTHS = [
   'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
@@ -41,8 +42,8 @@ const GlobalSalaryModal = ({ visible, onClose, onSave, initial, C, styles }) => 
   }, [visible]);
 
   const handleSave = () => {
-    const val = parseFloat(amount);
-    if (!amount || isNaN(val) || val <= 0) {
+    const val = parsePositiveAmount(amount);
+    if (val === null) {
       Alert.alert('Erreur', 'Veuillez entrer un montant valide.');
       return;
     }

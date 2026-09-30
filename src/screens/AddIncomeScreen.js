@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
 import { Colors, Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
 import { useTheme } from '../theme/ThemeContext';
+import { parsePositiveAmount } from '../utils/money';
 
 const CATEGORIES = [
   { key: 'salary', icon: '💼' },
@@ -37,13 +38,14 @@ const AddIncomeScreen = () => {
   const [date, setDate] = useState(today());
 
   const handleSave = async () => {
-    if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+    const parsedAmount = parsePositiveAmount(amount);
+    if (parsedAmount === null) {
       Alert.alert('', t('common.invalidAmount'));
       return;
     }
     await addIncome({
       id: Date.now().toString(),
-      amount: parseFloat(amount),
+      amount: parsedAmount,
       description,
       category,
       date,

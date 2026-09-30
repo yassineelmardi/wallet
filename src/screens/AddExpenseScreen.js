@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
 import { Colors, Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
 import { useTheme } from '../theme/ThemeContext';
+import { parsePositiveAmount } from '../utils/money';
 
 const VARIABLE_CATS = [
   { key: 'food', icon: '🍔' },
@@ -44,6 +45,7 @@ const AddExpenseScreen = () => {
   const type = route.params?.type || 'variable';
   const isFixed = type === 'fixed';
 
+  const { colors: C } = useTheme();
   const { addFixed, addVariable } = useApp();
   const categories = isFixed ? FIXED_CATS : VARIABLE_CATS;
   const accentColor = isFixed ? C.accentYellow : C.accentWarn;
@@ -54,13 +56,14 @@ const AddExpenseScreen = () => {
   const [date, setDate] = useState(today());
 
   const handleSave = async () => {
-    if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+    const parsedAmount = parsePositiveAmount(amount);
+    if (parsedAmount === null) {
       Alert.alert('', t('common.invalidAmount'));
       return;
     }
     const item = {
       id: Date.now().toString(),
-      amount: parseFloat(amount),
+      amount: parsedAmount,
       description,
       category,
       date: isFixed ? undefined : date,
@@ -73,7 +76,6 @@ const AddExpenseScreen = () => {
     navigation.goBack();
   };
 
-  const { colors: C } = useTheme();
   const styles = makeStyles(C);
   return (
     <SafeAreaView style={styles.safe}>

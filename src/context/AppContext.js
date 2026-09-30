@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import i18n from '../locales/i18n';
 import * as storage from '../storage/storage';
 
@@ -9,6 +9,7 @@ export const AppProvider = ({ children }) => {
   const [fixedExpenses, setFixedExpenses] = useState([]);
   const [variableExpenses, setVariableExpenses] = useState([]);
   const [settings, setSettings] = useState({ language: 'fr', darkMode: true, currency: '€' });
+  const settingsRef = useRef(settings);
   const [globalSalary, setGlobalSalary] = useState(null);
   const [monthlySalaries, setMonthlySalaries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,6 +33,7 @@ export const AppProvider = ({ children }) => {
     setFixedExpenses(fixed);
     setVariableExpenses(variable);
     setSettings(sett);
+    settingsRef.current = sett;
     setGlobalSalary(gSalary);
     setMonthlySalaries(mSalaries);
     i18n.changeLanguage(sett.language);
@@ -92,10 +94,17 @@ export const AppProvider = ({ children }) => {
   // ─── Paramètres ───────────────────────────────────────────────────────────
 
   const updateSettings = async (newSettings) => {
-    const merged = { ...settings, ...newSettings };
-    await storage.saveSettings(merged);
-    setSettings(merged);
-    if (newSettings.language) i18n.changeLanguage(newSettings.language);
+    const previous = settingsRef.current;
+    const merged = { ...previous, ...newSettings };
+    settingsRef.current = merged;
+    try {
+      await storage.saveSettings(merged);
+      setSettings(merged);
+      if (newSettings.language) i18n.changeLanguage(newSettings.language);
+    } catch (error) {
+      if (settingsRef.current === merged) settingsRef.current = previous;
+      throw error;
+    }
   };
 
   // ─── Salaire global ────────────────────────────────────────────────────────

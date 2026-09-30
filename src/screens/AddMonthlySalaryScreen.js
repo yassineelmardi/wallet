@@ -14,6 +14,7 @@ import {
 import { useApp } from '../context/AppContext';
 import { Colors, Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
 import { useTheme } from '../theme/ThemeContext';
+import { parsePositiveAmount } from '../utils/money';
 
 const MONTHS = [
   'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
@@ -39,10 +40,11 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
   const { colors: C } = useTheme();
   const styles = makeStyles(C);
   const cur = settings.currency || '€';
+  const previewAmount = parsePositiveAmount(amount);
 
   const handleSave = () => {
-    const val = parseFloat(amount);
-    if (!amount || isNaN(val) || val <= 0) {
+    const val = parsePositiveAmount(amount);
+    if (val === null) {
       Alert.alert('Erreur', 'Veuillez entrer un montant valide.');
       return;
     }
@@ -178,10 +180,8 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
             <Text style={styles.previewValue}>
               {MONTHS[selectedMonth]} {year}
             </Text>
-            {amount && !isNaN(parseFloat(amount)) ? (
-              <Text style={styles.previewAmount}>
-                {parseFloat(amount).toFixed(2)} {cur}
-              </Text>
+            {previewAmount !== null ? (
+              <Text style={styles.previewAmount}>{previewAmount.toFixed(2)} {cur}</Text>
             ) : null}
           </View>
 
