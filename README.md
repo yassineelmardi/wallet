@@ -54,6 +54,44 @@ npm start          # Metro sur le port 8082, affiche un QR code
 > Le port est forcé à **8082** dans tous les scripts, et le fichier `.env` versionné
 > surcharge `EXPO_PACKAGER_PROXY_URL` / `RCT_METRO_PORT`. Voir §7.
 
+### Mode test (développement uniquement)
+
+Pour exercer les écrans d'analyse, l'application embarque un générateur de jeu de données.
+
+**Réglages → Mode test → « Charger des données de démonstration »**
+
+| Donnée générée | Volume |
+|---|---|
+| Dépenses variables | 6 à 12 par mois sur **14 mois**, réparties sur 6 catégories |
+| Salaires mensuels | 1 par mois, entre 2 400 et 3 100 € |
+| Revenus complémentaires | ponctuels, environ un mois sur deux |
+| Charges fixes | 4 (loyer, fibre, assurance, crédit), **sans date** comme le modèle actuel |
+
+Les 14 mois couvrent deux années civiles, ce qui permet de tester la comparaison N vs N-1,
+le graphique 12 mois et la navigation annuelle.
+
+Le générateur est **déterministe** : un générateur congruentiel à graine fixe produit
+toujours le même jeu. Les observations restent comparables d'une session à l'autre et les
+tests sont stables. Le chargement **remplace** les données existantes, après confirmation.
+
+#### Garanties de non-exécution en production
+
+| Niveau | Protection | Test |
+|---|---|---|
+| Interface | La section est rendue sous `__DEV__` ; absente du rendu en production | `masque entierement le mode test hors developpement` |
+| Action | `loadDemoData()` retourne `null` immédiatement si `!__DEV__` | `reste inerte hors developpement meme en cas d appel direct` |
+
+La seconde garde est indispensable : la première ne protège que l'accès visuel, pas un appel
+direct à l'action exposée par le contexte.
+
+> **Nuance de transparence** : ces deux gardes garantissent qu'aucune donnée de test ne peut
+> être écrite en production. Elles ne retirent pas pour autant le code de `demoData.js` du
+> bundle — Metro inclut tout module statiquement importé. Pour une exclusion physique du
+> bundle, il faudrait une étape de build dédiée (plugin Babel de suppression conditionnelle,
+> ou convention de fichiers `.dev.js`). Le code concerné représente environ 90 lignes et reste
+> inerte.
+
+
 ---
 
 ## 2. Architecture complète
@@ -86,7 +124,12 @@ mobile-app/
 │   └── HelloScreen.js          # ☠ résidu du template initial
 └── src/
     ├── components/
-    │   └── LoadingScreen.js    # Splash pendant le chargement initial
+    │   ├── LoadingScreen.js    # Splash pendant le chargement initial
+    │   ├── ScreenHeader.js     # En-tête avec retour (Analytics, Historique)
+    │   ├── StepperSelector.js  # Base commune aux sélecteurs de période
+    │   ├── YearSelector.js · MonthSelector.js
+    │   ├── StatisticsCard.js · ComparisonCard.js
+    │   └── ExpenseTrendChart.js · ExpenseCategoryChart.js
     ├── context/
     │   └── AppContext.js       # ★ Cœur métier : état + calculs + mutations
     ├── hooks/
@@ -95,16 +138,20 @@ mobile-app/
     │   ├── i18n.js             # Init i18next
     │   └── fr.js / en.js / ar.js
     ├── navigation/
-    │   └── AppNavigator.js     # 5 onglets + 3 modales
-    ├── screens/                # 9 écrans (dont 1 inatteignable, voir §8)
+    │   └── AppNavigator.js     # 5 onglets + 3 modales + Analytics/Historique
+    ├── screens/                # 11 écrans (dont 1 inatteignable, voir §8)
+    ├── services/
+    │   ├── analytics.js        # ★ Agrégations (mois, année, catégories, comparaison)
+    │   └── demoData.js         # Jeu de test, inerte hors développement
     ├── storage/
     │   └── storage.js          # ★ Persistance AsyncStorage (CRUD par entité)
     ├── testSupport/            # Mock AsyncStorage + render avec providers
     ├── theme/
-    │   ├── colors.js           # Tokens + DarkTheme / LightTheme
-    │   └── ThemeContext.js     # Mode de thème persistant
+    │   ├── colors.js           # Tokens + 10 palettes (claire et sombre)
+    │   └── ThemeContext.js     # Mode et palette persistants
     └── utils/
-        └── money.js            # Validation stricte des montants
+        ├── money.js            # Validation stricte des montants
+        └── period.js           # Périodes, mois, arithmétique de dates
 ```
 
 ### 2.3 Modèle de données

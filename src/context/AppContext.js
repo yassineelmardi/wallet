@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import i18n from '../locales/i18n';
+import { generateDemoDataset } from '../services/demoData';
 import * as storage from '../storage/storage';
 
 const AppContext = createContext(null);
@@ -148,6 +149,26 @@ export const AppProvider = ({ children }) => {
     setMonthlySalaries([]);
   };
 
+  // Remplace les donnees financieres par un jeu de test couvrant plusieurs mois.
+  // Inerte hors developpement : la garde d'interface ne protege pas d'un appel direct.
+  const loadDemoData = async (options) => {
+    if (!__DEV__) return null;
+    const dataset = generateDemoDataset(options);
+    await Promise.all([
+      storage.saveIncome(dataset.income),
+      storage.saveFixedExpenses(dataset.fixedExpenses),
+      storage.saveVariableExpenses(dataset.variableExpenses),
+      storage.saveMonthlySalaries(dataset.monthlySalaries),
+      storage.deleteGlobalSalary(),
+    ]);
+    setIncome(dataset.income);
+    setFixedExpenses(dataset.fixedExpenses);
+    setVariableExpenses(dataset.variableExpenses);
+    setMonthlySalaries(dataset.monthlySalaries);
+    setGlobalSalary(null);
+    return dataset;
+  };
+
   // ─── Calculs ──────────────────────────────────────────────────────────────
 
   const currentMonthSalary = useMemo(() => {
@@ -201,6 +222,7 @@ export const AppProvider = ({ children }) => {
         setSalaryForMonth,
         removeMonthlySalary,
         resetData,
+        loadDemoData,
         reload: loadAll,
       }}
     >

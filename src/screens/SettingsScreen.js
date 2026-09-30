@@ -21,7 +21,7 @@ const THEMES = [
 
 const SettingsScreen = () => {
   const { t } = useTranslation();
-  const { settings, updateSettings, resetData } = useApp();
+  const { settings, updateSettings, resetData, loadDemoData } = useApp();
   const { colors: C, themeMode, setTheme, isDark, paletteId, setPalette, palettes } = useTheme();
 
   const handleReset = () => {
@@ -31,6 +31,17 @@ const SettingsScreen = () => {
       Alert.alert(t('common.confirm'), t('settings.resetConfirm'), [
         { text: t('common.cancel'), style: 'cancel' },
         { text: t('common.confirm'), style: 'destructive', onPress: resetData },
+      ]);
+    }
+  };
+
+  const handleLoadDemo = () => {
+    if (Platform.OS === 'web') {
+      if (window.confirm(t('settings.demoConfirm'))) loadDemoData();
+    } else {
+      Alert.alert(t('common.confirm'), t('settings.demoConfirm'), [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('common.confirm'), onPress: () => loadDemoData() },
       ]);
     }
   };
@@ -202,6 +213,31 @@ const SettingsScreen = () => {
         >
           <Text style={{ color: C.error, fontSize: FontSize.md, fontWeight: '700' }}>🗑  {t('settings.resetData')}</Text>
         </TouchableOpacity>
+
+        {__DEV__ ? (
+          <>
+            <SectionTitle text={t('settings.testMode')} />
+            <View style={[styles.card, { backgroundColor: C.card }]}>
+              <TouchableOpacity
+                style={styles.row}
+                onPress={handleLoadDemo}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel={t('settings.loadDemoData')}
+              >
+                <Text style={{ fontSize: 22, marginRight: Spacing.sm }}>🧪</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: C.textPrimary, fontWeight: '700', fontSize: FontSize.md }}>
+                    {t('settings.loadDemoData')}
+                  </Text>
+                  <Text style={{ color: C.textMuted, fontSize: FontSize.xs, marginTop: 1 }}>
+                    {t('settings.loadDemoHint')}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </>
+        ) : null}
 
       </ScrollView>
     </SafeAreaView>

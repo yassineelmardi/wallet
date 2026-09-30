@@ -74,3 +74,42 @@ it('liste les palettes disponibles et persiste celle choisie', async () => {
     expect(AsyncStorage.getItem('@wallet_palette')).resolves.toBe('emerald')
   );
 });
+
+it('charge le jeu de test apres confirmation', async () => {
+  const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+  const { getByLabelText, getByText } = renderWithProviders(<SettingsScreen />);
+  await waitFor(() => expect(getByText('Mode test')).toBeTruthy());
+
+  fireEvent.press(getByLabelText('Charger des données de démonstration'));
+
+  expect(alert).toHaveBeenCalledWith(
+    'Confirmer',
+    'Vos données actuelles seront remplacées par un jeu de test. Confirmer ?',
+    expect.arrayContaining([
+      expect.objectContaining({ text: 'Annuler', style: 'cancel' }),
+      expect.objectContaining({ text: 'Confirmer', onPress: expect.any(Function) }),
+    ])
+  );
+  await expect(storage.getVariableExpenses()).resolves.toEqual([]);
+
+  const confirm = alert.mock.calls[0][2].find((button) => button.text === 'Confirmer');
+  await act(async () => confirm.onPress());
+
+  await waitFor(async () =>
+    expect((await storage.getMonthlySalaries()).length).toBeGreaterThan(0)
+  );
+});
+
+it('masque entierement le mode test hors developpement', async () => {
+  global.__DEV__ = false;
+
+  try {
+    const { getByText, queryByLabelText, queryByText } = renderWithProviders(<SettingsScreen />);
+    await waitFor(() => expect(getByText('Paramètres')).toBeTruthy());
+
+    expect(queryByText('Mode test')).toBeNull();
+    expect(queryByLabelText('Charger des données de démonstration')).toBeNull();
+  } finally {
+    global.__DEV__ = true;
+  }
+});

@@ -83,6 +83,10 @@ export default {
       resetConfirm: 'Toutes vos données seront supprimées. Confirmer ?',
       about: 'À propos',
       version: 'Version',
+      testMode: 'Mode test',
+      loadDemoData: 'Charger des données de démonstration',
+      loadDemoHint: '14 mois d\'historique pour tester les analyses',
+      demoConfirm: 'Vos données actuelles seront remplacées par un jeu de test. Confirmer ?',
     },
     // Analytics
     analytics: {

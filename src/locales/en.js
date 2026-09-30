@@ -77,6 +77,10 @@ export default {
       resetConfirm: 'All your data will be deleted. Confirm?',
       about: 'About',
       version: 'Version',
+      testMode: 'Test mode',
+      loadDemoData: 'Load demo data',
+      loadDemoHint: '14 months of history to test analytics',
+      demoConfirm: 'Your current data will be replaced by a test dataset. Confirm?',
     },
     analytics: {
       title: 'Analytics',

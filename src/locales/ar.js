@@ -77,6 +77,10 @@ export default {
       resetConfirm: 'سيتم حذف جميع بياناتك. تأكيد؟',
       about: 'حول التطبيق',
       version: 'الإصدار',
+      testMode: 'وضع الاختبار',
+      loadDemoData: 'تحميل بيانات تجريبية',
+      loadDemoHint: '14 شهرا من السجل لاختبار التحليلات',
+      demoConfirm: 'سيتم استبدال بياناتك الحالية ببيانات اختبار. تأكيد؟',
     },
     analytics: {
       title: 'التحليلات',

@@ -236,4 +236,45 @@ describe('AppProvider settings, salaries, and reset', () => {
     expect(result.current.settings.currency).toBe('$');
     await expect(storage.getSettings()).resolves.toEqual(result.current.settings);
   });
+
+  it('charge un jeu de test persistant couvrant plusieurs mois', async () => {
+    const { result } = await renderApp();
+
+    await act(async () => result.current.loadDemoData({ months: 4, reference: new Date(2026, 8, 30) }));
+
+    expect(result.current.monthlySalaries).toHaveLength(4);
+    expect(result.current.variableExpenses.length).toBeGreaterThan(0);
+    expect(result.current.fixedExpenses).toHaveLength(4);
+    expect(result.current.globalSalary).toBeNull();
+
+    await expect(storage.getVariableExpenses()).resolves.toEqual(result.current.variableExpenses);
+    await expect(storage.getMonthlySalaries()).resolves.toEqual(result.current.monthlySalaries);
+  });
+
+  it('remplace les donnees existantes par le jeu de test', async () => {
+    const { result } = await renderApp();
+    await act(async () => result.current.addVariable({ id: 'ancien', amount: 10, date: '2020-01-01' }));
+
+    await act(async () => result.current.loadDemoData({ months: 2, reference: new Date(2026, 8, 30) }));
+
+    expect(result.current.variableExpenses.some((item) => item.id === 'ancien')).toBe(false);
+  });
+
+  it('reste inerte hors developpement meme en cas d appel direct', async () => {
+    const { result } = await renderApp();
+    global.__DEV__ = false;
+
+    try {
+      await act(async () => {
+        await result.current.loadDemoData({ months: 2, reference: new Date(2026, 8, 30) });
+      });
+    } finally {
+      global.__DEV__ = true;
+    }
+
+    expect(result.current.monthlySalaries).toEqual([]);
+    expect(result.current.variableExpenses).toEqual([]);
+    await expect(storage.getMonthlySalaries()).resolves.toEqual([]);
+    await expect(storage.getVariableExpenses()).resolves.toEqual([]);
+  });
 });
