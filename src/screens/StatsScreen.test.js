@@ -1,0 +1,51 @@
+import React from 'react';
+import { waitFor } from '@testing-library/react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as storage from '../storage/storage';
+import { renderWithProviders } from '../testSupport/renderWithProviders';
+import StatsScreen from './StatsScreen';
+
+beforeEach(() => AsyncStorage.reset());
+
+it('aggregates expenses by category and calculates budget usage', async () => {
+  await storage.saveGlobalSalary({ id: 'global', amount: '1000' });
+  await storage.saveFixedExpenses([
+    { id: 'rent', category: 'rent', amount: '300' },
+  ]);
+  await storage.saveVariableExpenses([
+    { id: 'rent-extra', category: 'rent', amount: '50' },
+    { id: 'food', category: 'food', amount: '150' },
+  ]);
+  const { getByText } = renderWithProviders(<StatsScreen />);
+
+  await waitFor(() => expect(getByText('50% du budget utilisé')).toBeTruthy());
+  expect(getByText('350 €')).toBeTruthy();
+  expect(getByText('150 €')).toBeTruthy();
+});
+
+it('uses the other category for records without a category', async () => {
+  await storage.saveVariableExpenses([{ id: 'misc', amount: '12' }]);
+  const { getByText } = renderWithProviders(<StatsScreen />);
+
+  await waitFor(() => expect(getByText('Autre')).toBeTruthy());
+  expect(getByText('12 €')).toBeTruthy();
+});
+
+it('caps expense usage at one hundred percent when overspending', async () => {
+  await storage.saveGlobalSalary({ id: 'global', amount: '100' });
+  await storage.saveVariableExpenses([{ id: 'expense', amount: '250', category: 'food' }]);
+  const { getByText } = renderWithProviders(<StatsScreen />);
+
+  await waitFor(() => expect(getByText('100% du budget utilisé')).toBeTruthy());
+});
+
+it('shows the empty state only when both income and expenses are zero', async () => {
+  const empty = renderWithProviders(<StatsScreen />);
+  await waitFor(() => expect(empty.getByText('Aucune donnée ce mois')).toBeTruthy());
+  empty.unmount();
+
+  await storage.saveVariableExpenses([{ id: 'expense', amount: '10', category: 'food' }]);
+  const nonEmpty = renderWithProviders(<StatsScreen />);
+  await waitFor(() => expect(nonEmpty.getByText('10 €')).toBeTruthy());
+  expect(nonEmpty.queryByText('Aucune donnée ce mois')).toBeNull();
+});
