@@ -60,3 +60,17 @@ it('uses the default currency when settings have no currency', async () => {
 
   await waitFor(() => expect(getByText('+2 500 €')).toBeTruthy());
 });
+
+it('liste les palettes disponibles et persiste celle choisie', async () => {
+  const { getByLabelText, getByText } = renderWithProviders(<SettingsScreen />);
+  await waitFor(() => expect(getByText('Palette')).toBeTruthy());
+
+  expect(getByLabelText('Palette Classique')).toBeTruthy();
+  expect(getByLabelText('Palette AMOLED Pure Black')).toBeTruthy();
+
+  fireEvent.press(getByLabelText('Palette Emerald Finance'));
+
+  await waitFor(async () =>
+    expect(AsyncStorage.getItem('@wallet_palette')).resolves.toBe('emerald')
+  );
+});

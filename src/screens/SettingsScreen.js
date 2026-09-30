@@ -22,7 +22,7 @@ const THEMES = [
 const SettingsScreen = () => {
   const { t } = useTranslation();
   const { settings, updateSettings, resetData } = useApp();
-  const { colors: C, themeMode, setTheme, isDark } = useTheme();
+  const { colors: C, themeMode, setTheme, isDark, paletteId, setPalette, palettes } = useTheme();
 
   const handleReset = () => {
     if (Platform.OS === 'web') {
@@ -82,10 +82,49 @@ const SettingsScreen = () => {
           })}
         </View>
 
+        {/* Palette picker */}
+        <SectionTitle text="Palette" />
+        <View style={[styles.card, { backgroundColor: C.card }]}>
+          {Object.values(palettes).map((palette, i) => {
+            const active = paletteId === palette.id;
+            const swatch = palette[isDark ? 'dark' : 'light'];
+            return (
+              <TouchableOpacity
+                key={palette.id}
+                onPress={() => setPalette(palette.id)}
+                style={[
+                  styles.themeRow,
+                  active && { backgroundColor: C.primarySurface },
+                  i < Object.keys(palettes).length - 1 && { borderBottomWidth: 1, borderBottomColor: C.borderLight },
+                ]}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel={`Palette ${palette.label}`}
+              >
+                <Text style={{ fontSize: 22, marginRight: Spacing.sm }}>{palette.icon}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: active ? C.primary : C.textPrimary, fontWeight: '700', fontSize: FontSize.md }}>{palette.label}</Text>
+                  <Text style={{ color: C.textMuted, fontSize: FontSize.xs, marginTop: 1 }}>{palette.desc}</Text>
+                </View>
+                <View style={{ flexDirection: 'row', gap: 4, marginRight: Spacing.sm }}>
+                  {[swatch.primary, swatch.success, swatch.accentWarn].map((col) => (
+                    <View key={col} style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: col }} />
+                  ))}
+                </View>
+                {active && (
+                  <View style={[styles.activeDot, { backgroundColor: C.primary }]}>
+                    <Text style={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>✓</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
         {/* Preview */}
         <View style={[styles.previewCard, { backgroundColor: C.card, borderColor: C.border }]}>
           <Text style={{ color: C.textMuted, fontSize: FontSize.xs, fontWeight: '600', marginBottom: Spacing.sm }}>APERÇU DU THÈME ACTIF</Text>
-          <View style={[styles.previewInner, { backgroundColor: isDark ? '#0A0E1A' : '#F2F5FC' }]}>
+          <View style={[styles.previewInner, { backgroundColor: C.background }]}>
             <View style={[styles.previewHero, { backgroundColor: C.primary }]}>
               <Text style={{ color: '#fff', fontWeight: '800', fontSize: FontSize.sm }}>Solde du mois</Text>
               <Text style={{ color: '#fff', fontWeight: '800', fontSize: FontSize.xl }}>+2 500 {settings.currency || '\u20ac'}</Text>
