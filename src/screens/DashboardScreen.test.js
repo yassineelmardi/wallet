@@ -4,6 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as storage from '../storage/storage';
 import { renderWithProviders } from '../testSupport/renderWithProviders';
 import DashboardScreen from './DashboardScreen';
+import { formatCurrency, formatPercent } from '../utils/format';
+
+const money = (value, options) => formatCurrency(value, 'EUR', 'fr', options);
+const share = (value) => formatPercent(value, 'fr');
 
 beforeEach(() => AsyncStorage.reset());
 
@@ -14,10 +18,10 @@ it('shows the calculated balance, income, spending, and budget percentage', asyn
   await storage.saveVariableExpenses([{ id: 'food', amount: '200' }]);
   const { getAllByText, getByText } = renderWithProviders(<DashboardScreen />);
 
-  await waitFor(() => expect(getByText('42%')).toBeTruthy());
-  expect(getAllByText('+700.00 €')).toHaveLength(2);
-  expect(getByText('1200 €')).toBeTruthy();
-  expect(getByText('500 €')).toBeTruthy();
+  await waitFor(() => expect(getByText(share(42))).toBeTruthy());
+  expect(getAllByText(money(700, { signDisplay: 'always' }))).toHaveLength(2);
+  expect(getByText(money(1200, { compact: true }))).toBeTruthy();
+  expect(getByText(money(500, { compact: true }))).toBeTruthy();
   expect(getByText('Revenus supplémentaires')).toBeTruthy();
 });
 
@@ -26,8 +30,8 @@ it('shows a negative balance and caps the displayed budget percentage', async ()
   await storage.saveVariableExpenses([{ id: 'expense', amount: '200' }]);
   const { getAllByText, getByText } = renderWithProviders(<DashboardScreen />);
 
-  await waitFor(() => expect(getByText('100%')).toBeTruthy());
-  expect(getAllByText('-100.00 €')).toHaveLength(2);
+  await waitFor(() => expect(getByText(share(100))).toBeTruthy());
+  expect(getAllByText(money(-100, { signDisplay: 'always' }))).toHaveLength(2);
 });
 
 it('uses the warning state when budget usage is between sixty and eighty percent', async () => {
@@ -35,6 +39,6 @@ it('uses the warning state when budget usage is between sixty and eighty percent
   await storage.saveVariableExpenses([{ id: 'expense', amount: '70' }]);
   const { getByText } = renderWithProviders(<DashboardScreen />);
 
-  await waitFor(() => expect(getByText('70%')).toBeTruthy());
-  expect(getByText('70%').props.style.color).toBe('#FFB740');
+  await waitFor(() => expect(getByText(share(70))).toBeTruthy());
+  expect(getByText(share(70)).props.style.color).toBe('#FFB740');
 });

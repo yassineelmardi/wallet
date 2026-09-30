@@ -4,7 +4,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as storage from '../storage/storage';
 import { renderWithProviders } from '../testSupport/renderWithProviders';
 import HistoryScreen from './HistoryScreen';
+import { formatCurrency, formatDate } from '../utils/format';
 import { currentPeriod, formatPeriod, shiftMonth } from '../utils/period';
+
+const money = (value) => formatCurrency(value, 'EUR', 'fr', { signDisplay: 'always' });
+const day = (iso) => formatDate(iso, 'fr');
 
 const today = currentPeriod();
 const iso = ({ year, month }, day = '10') =>
@@ -42,8 +46,8 @@ describe('HistoryScreen', () => {
 
     await waitFor(() => expect(getByText('Courses')).toBeTruthy());
     expect(getByText('Prime')).toBeTruthy();
-    expect(getAllByText('-120.00 €').length).toBeGreaterThan(0);
-    expect(getAllByText('+500.00 €').length).toBeGreaterThan(0);
+    expect(getAllByText(money(-120)).length).toBeGreaterThan(0);
+    expect(getAllByText(money(500)).length).toBeGreaterThan(0);
   });
 
   it('navigue vers le mois precedent', async () => {
@@ -91,7 +95,7 @@ describe('HistoryScreen', () => {
     const { getAllByText, getByText } = renderWithProviders(<HistoryScreen />);
 
     await waitFor(() => expect(getByText('Salaire')).toBeTruthy());
-    expect(getAllByText('+2500.00 €').length).toBeGreaterThan(0);
+    expect(getAllByText(money(2500)).length).toBeGreaterThan(0);
   });
 
   it('traduit les categories de revenus depuis leur propre espace de cles', async () => {
@@ -101,6 +105,6 @@ describe('HistoryScreen', () => {
     const { getByText } = renderWithProviders(<HistoryScreen />);
 
     await waitFor(() => expect(getByText('Bonus')).toBeTruthy());
-    expect(getByText(`Bonus · ${iso(today, '08')}`)).toBeTruthy();
+    expect(getByText(`Bonus · ${day(iso(today, '08'))}`)).toBeTruthy();
   });
 });

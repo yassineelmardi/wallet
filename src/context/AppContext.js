@@ -1,7 +1,17 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { I18nManager } from 'react-native';
 import i18n from '../locales/i18n';
 import { generateDemoDataset } from '../services/demoData';
 import * as storage from '../storage/storage';
+
+const RTL_LANGUAGES = ['ar', 'he', 'fa', 'ur'];
+
+// Le sens de lecture ne s'applique pleinement qu'au prochain demarrage.
+const applyDirection = (language) => {
+  const shouldBeRTL = RTL_LANGUAGES.includes(String(language).split('-')[0]);
+  I18nManager.allowRTL(shouldBeRTL);
+  if (I18nManager.isRTL !== shouldBeRTL) I18nManager.forceRTL(shouldBeRTL);
+};
 
 const AppContext = createContext(null);
 
@@ -38,6 +48,7 @@ export const AppProvider = ({ children }) => {
     setGlobalSalary(gSalary);
     setMonthlySalaries(mSalaries);
     i18n.changeLanguage(sett.language);
+    applyDirection(sett.language);
     setLoading(false);
   };
 
@@ -101,7 +112,10 @@ export const AppProvider = ({ children }) => {
     try {
       await storage.saveSettings(merged);
       setSettings(merged);
-      if (newSettings.language) i18n.changeLanguage(newSettings.language);
+      if (newSettings.language) {
+        i18n.changeLanguage(newSettings.language);
+        applyDirection(newSettings.language);
+      }
     } catch (error) {
       if (settingsRef.current === merged) settingsRef.current = previous;
       throw error;

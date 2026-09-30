@@ -16,6 +16,15 @@ export default {
       budgetUsed: 'الميزانية المستخدمة',
       noData: 'لا توجد بيانات هذا الشهر',
       thisMonth: 'هذا الشهر',
+      activeSalary: 'الراتب النشط',
+      additionalIncome: 'دخل إضافي',
+      spent: 'المصروف:',
+      budget: 'الميزانية:',
+    },
+    salary: {
+      monthly: 'شهري',
+      global: 'عام',
+      undefined: 'غير محدد',
     },
     income: {
       title: 'دخلي',
@@ -65,6 +74,7 @@ export default {
       byCategory: 'حسب الفئة',
       monthly: 'شهري',
       incomeVsExpenses: 'الدخل مقابل المصاريف',
+      budgetUsedSuffix: '{{value}} من الميزانية',
     },
     settings: {
       title: 'الإعدادات',

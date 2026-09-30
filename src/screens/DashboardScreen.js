@@ -3,13 +3,14 @@ import { ScrollView, StyleSheet, Text, View, SafeAreaView, TouchableOpacity } fr
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
+import { useFormat } from '../hooks/useFormat';
 import { useTheme } from '../theme/ThemeContext';
 import { Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
 
-const StatCard = ({ label, amount, currency, accent, C }) => (
+const StatCard = ({ label, value, accent, C }) => (
   <View style={[statCardStyle(C), { borderLeftColor: accent }]}>
     <Text style={{ color: C.textMuted, fontSize: FontSize.xs, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>{label}</Text>
-    <Text style={{ color: accent, fontSize: FontSize.xl, fontWeight: '800' }}>{amount.toFixed(2)} {currency}</Text>
+    <Text style={{ color: accent, fontSize: FontSize.xl, fontWeight: '800' }}>{value}</Text>
   </View>
 );
 
@@ -30,7 +31,7 @@ const DashboardScreen = () => {
     totalVariable, balance, budgetUsedPercent,
     settings, currentMonthSalary,
   } = useApp();
-  const cur = settings.currency || '\u20ac';
+  const { money, percent } = useFormat();
 
   const balancePositive = balance >= 0;
   const pct = Math.min(budgetUsedPercent, 100);
@@ -45,17 +46,17 @@ const DashboardScreen = () => {
           <Text style={styles.greeting}>{t('dashboard.greeting')} 👋</Text>
           <Text style={styles.heroLabel}>{t('dashboard.totalBalance')}</Text>
           <Text style={[styles.heroBalance, { color: balancePositive ? '#7FFFDA' : '#FF9999' }]}>
-            {balance >= 0 ? '+' : ''}{balance.toFixed(2)} {cur}
+            {money(balance, { signDisplay: 'always' })}
           </Text>
           <View style={styles.heroRow}>
             <View style={styles.heroStat}>
-              <Text style={styles.heroStatLabel}>Revenus</Text>
-              <Text style={styles.heroStatVal}>{totalIncome.toFixed(0)} {cur}</Text>
+              <Text style={styles.heroStatLabel}>{t('analytics.totalIncome')}</Text>
+              <Text style={styles.heroStatVal}>{money(totalIncome, { compact: true })}</Text>
             </View>
             <View style={styles.heroDivider} />
             <View style={styles.heroStat}>
-              <Text style={styles.heroStatLabel}>Dépenses</Text>
-              <Text style={styles.heroStatVal}>{(totalFixed + totalVariable).toFixed(0)} {cur}</Text>
+              <Text style={styles.heroStatLabel}>{t('analytics.totalExpenses')}</Text>
+              <Text style={styles.heroStatVal}>{money(totalFixed + totalVariable, { compact: true })}</Text>
             </View>
           </View>
         </LinearGradient>
@@ -63,16 +64,16 @@ const DashboardScreen = () => {
         {/* ── Salary chip ── */}
         <View style={[styles.salaryChip, { backgroundColor: C.card, borderColor: C.border }]}>
           <View>
-            <Text style={{ color: C.textMuted, fontSize: FontSize.xs, fontWeight: '600' }}>Salaire actif</Text>
+            <Text style={{ color: C.textMuted, fontSize: FontSize.xs, fontWeight: '600' }}>{t('dashboard.activeSalary')}</Text>
             <Text style={{ color: C.textPrimary, fontSize: FontSize.lg, fontWeight: '800', marginTop: 2 }}>
-              {currentMonthSalary.amount.toFixed(2)} {cur}
+              {money(currentMonthSalary.amount)}
             </Text>
           </View>
           <View style={[styles.badge, {
             backgroundColor: currentMonthSalary.type === 'monthly' ? C.accentYellowSurface : C.primarySurface,
           }]}>
             <Text style={{ fontSize: FontSize.xs, fontWeight: '700', color: currentMonthSalary.type === 'monthly' ? C.accentYellow : C.primary }}>
-              {currentMonthSalary.type === 'monthly' ? 'MENSUEL' : currentMonthSalary.type === 'global' ? 'GLOBAL' : 'NON DÉFINI'}
+              {currentMonthSalary.type === 'monthly' ? t('salary.monthly') : currentMonthSalary.type === 'global' ? t('salary.global') : t('salary.undefined')}
             </Text>
           </View>
         </View>
@@ -81,25 +82,25 @@ const DashboardScreen = () => {
         <View style={[styles.budgetCard, { backgroundColor: C.card }]}>
           <View style={styles.budgetRow}>
             <Text style={{ color: C.textSecondary, fontSize: FontSize.sm, fontWeight: '600' }}>{t('dashboard.budgetUsed')}</Text>
-            <Text style={{ color: barColor, fontSize: FontSize.sm, fontWeight: '800' }}>{pct}%</Text>
+            <Text style={{ color: barColor, fontSize: FontSize.sm, fontWeight: '800' }}>{percent(pct)}</Text>
           </View>
           <View style={[styles.barBg, { backgroundColor: C.border }]}>
             <View style={[styles.barFill, { width: pct + '%', backgroundColor: barColor }]} />
           </View>
           <View style={styles.budgetRow}>
-            <Text style={{ color: C.textMuted, fontSize: FontSize.xs }}>Dépensé: {(totalFixed + totalVariable).toFixed(2)} {cur}</Text>
-            <Text style={{ color: C.textMuted, fontSize: FontSize.xs }}>Budget: {totalIncome.toFixed(2)} {cur}</Text>
+            <Text style={{ color: C.textMuted, fontSize: FontSize.xs }}>{t('dashboard.spent')} {money(totalFixed + totalVariable)}</Text>
+            <Text style={{ color: C.textMuted, fontSize: FontSize.xs }}>{t('dashboard.budget')} {money(totalIncome)}</Text>
           </View>
         </View>
 
         {/* ── Stat cards ── */}
         <View style={{ paddingHorizontal: Spacing.md }}>
-          <StatCard label={t('dashboard.totalIncome')} amount={totalIncome} currency={cur} accent={C.success} C={C} />
+          <StatCard label={t('dashboard.totalIncome')} value={money(totalIncome)} accent={C.success} C={C} />
           {totalAdditionalIncome > 0 && (
-            <StatCard label="Revenus supplémentaires" amount={totalAdditionalIncome} currency={cur} accent={C.primaryLight} C={C} />
+            <StatCard label={t('dashboard.additionalIncome')} value={money(totalAdditionalIncome)} accent={C.primaryLight} C={C} />
           )}
-          <StatCard label={t('dashboard.fixedExpenses')} amount={totalFixed} currency={cur} accent={C.accentYellow} C={C} />
-          <StatCard label={t('dashboard.variableExpenses')} amount={totalVariable} currency={cur} accent={C.accentWarn} C={C} />
+          <StatCard label={t('dashboard.fixedExpenses')} value={money(totalFixed)} accent={C.accentYellow} C={C} />
+          <StatCard label={t('dashboard.variableExpenses')} value={money(totalVariable)} accent={C.accentWarn} C={C} />
         </View>
 
         {/* ── Balance finale ── */}
@@ -109,7 +110,7 @@ const DashboardScreen = () => {
         >
           <Text style={{ color: '#ffffffcc', fontSize: FontSize.sm, marginBottom: 6 }}>{t('dashboard.totalBalance')}</Text>
           <Text style={{ color: '#fff', fontSize: FontSize.xxl, fontWeight: '800' }}>
-            {balance >= 0 ? '+' : ''}{balance.toFixed(2)} {cur}
+            {money(balance, { signDisplay: 'always' })}
           </Text>
         </LinearGradient>
 

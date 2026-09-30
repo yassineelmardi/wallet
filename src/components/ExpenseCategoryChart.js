@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useFormat } from '../hooks/useFormat';
 import { useTheme } from '../theme/ThemeContext';
 import { BorderRadius, FontSize, Shadow, Spacing } from '../theme/colors';
 
@@ -11,9 +12,10 @@ const CATEGORY_COLORS = {
   other: '#8A9BB8',
 };
 
-const ExpenseCategoryChart = ({ data, currency, emptyLabel }) => {
+const ExpenseCategoryChart = ({ data, emptyLabel }) => {
   const { t } = useTranslation();
   const { colors: C } = useTheme();
+  const { money, percent } = useFormat();
 
   if (data.length === 0) {
     return (
@@ -36,17 +38,17 @@ const ExpenseCategoryChart = ({ data, currency, emptyLabel }) => {
             key={entry.category}
             style={styles.row}
             accessibilityRole="text"
-            accessibilityLabel={`${label} : ${entry.total.toFixed(2)} ${currency}, ${Math.round(entry.share * 100)} %`}
+            accessibilityLabel={`${label} : ${money(entry.total)}, ${percent(entry.share * 100)}`}
           >
             <Text style={[styles.name, { color: C.textSecondary }]} numberOfLines={1}>{label}</Text>
             <View style={[styles.track, { backgroundColor: C.border }]}>
               <View style={[styles.fill, { width: `${width}%`, backgroundColor: tone }]} />
             </View>
             <Text style={[styles.amount, { color: tone }]} numberOfLines={1}>
-              {entry.total.toFixed(0)} {currency}
+              {money(entry.total, { compact: true })}
             </Text>
             <Text style={[styles.share, { color: C.textMuted }]}>
-              {Math.round(entry.share * 100)} %
+              {percent(entry.share * 100)}
             </Text>
           </View>
         );

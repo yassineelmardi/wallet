@@ -3,6 +3,7 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } fr
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
+import { useFormat } from '../hooks/useFormat';
 import { useTheme } from '../theme/ThemeContext';
 import { BorderRadius, FontSize, Spacing } from '../theme/colors';
 import ComparisonCard from '../components/ComparisonCard';
@@ -28,7 +29,7 @@ const AnalyticsScreen = () => {
   const navigation = useNavigation();
   const { colors: C } = useTheme();
   const { income, variableExpenses, monthlySalaries, fixedExpenses, settings } = useApp();
-  const cur = settings.currency || '€';
+  const { money } = useFormat();
 
   const today = currentPeriod();
   const [mode, setMode] = useState('month');
@@ -121,7 +122,7 @@ const AnalyticsScreen = () => {
         <View style={styles.grid}>
           <StatisticsCard
             label={t('analytics.totalExpenses')}
-            value={`${analytics.totalExpenses.toFixed(2)} ${cur}`}
+            value={money(analytics.totalExpenses)}
             accent={C.accentWarn}
           />
           <StatisticsCard
@@ -133,7 +134,7 @@ const AnalyticsScreen = () => {
             label={t('analytics.largestExpense')}
             value={
               analytics.largestExpense
-                ? `${analytics.largestExpense.amount.toFixed(2)} ${cur}`
+                ? money(analytics.largestExpense.amount)
                 : '—'
             }
             hint={
@@ -147,8 +148,8 @@ const AnalyticsScreen = () => {
             label={isMonthly ? t('analytics.totalIncome') : t('analytics.monthlyAverage')}
             value={
               isMonthly
-                ? `${analytics.totalIncome.toFixed(2)} ${cur}`
-                : `${analytics.monthlyAverage.toFixed(2)} ${cur}`
+                ? money(analytics.totalIncome)
+                : money(analytics.monthlyAverage)
             }
             accent={C.success}
           />
@@ -162,7 +163,6 @@ const AnalyticsScreen = () => {
           current={comparison.current.totalExpenses}
           previous={comparison.previous.totalExpenses}
           delta={comparison.expensesDelta}
-          currency={cur}
           lowerIsBetter
         />
 
@@ -171,7 +171,6 @@ const AnalyticsScreen = () => {
         </Text>
         <ExpenseTrendChart
           data={series}
-          currency={cur}
           selectedMonth={isMonthly ? period.month : null}
           onSelectMonth={(month) => {
             setMode('month');
@@ -183,7 +182,6 @@ const AnalyticsScreen = () => {
         <Text style={[styles.section, { color: C.textMuted }]}>{t('analytics.byCategory')}</Text>
         <ExpenseCategoryChart
           data={breakdown}
-          currency={cur}
           emptyLabel={t('analytics.noData')}
         />
 

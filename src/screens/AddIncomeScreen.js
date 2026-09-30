@@ -17,6 +17,7 @@ import { useApp } from '../context/AppContext';
 import { Colors, Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
 import { useTheme } from '../theme/ThemeContext';
 import { parsePositiveAmount } from '../utils/money';
+import { todayISO } from '../utils/format';
 
 const CATEGORIES = [
   { key: 'salary', icon: '💼' },
@@ -25,7 +26,7 @@ const CATEGORIES = [
   { key: 'other', icon: '💰' },
 ];
 
-const today = () => new Date().toISOString().split('T')[0];
+const today = () => todayISO();
 
 const AddIncomeScreen = () => {
   const { t } = useTranslation();

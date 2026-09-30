@@ -3,6 +3,7 @@ import { Alert, FlatList, Platform, SafeAreaView, StyleSheet, Text, TouchableOpa
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
+import { useFormat } from '../hooks/useFormat';
 import { useTheme } from '../theme/ThemeContext';
 import { Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
 
@@ -20,8 +21,8 @@ const ExpensesScreen = () => {
   const navigation = useNavigation();
   const { colors: C } = useTheme();
   const { fixedExpenses, variableExpenses, removeFixed, removeVariable, totalFixed, totalVariable, settings } = useApp();
+  const { money } = useFormat();
   const [tab, setTab] = useState('variable');
-  const cur = settings.currency || '\u20ac';
 
   const isFixed = tab === 'fixed';
   const data = isFixed ? fixedExpenses : variableExpenses;
@@ -57,7 +58,7 @@ const ExpensesScreen = () => {
       </View>
       <View style={{ alignItems: 'flex-end' }}>
         <Text style={{ color: accent, fontWeight: '700', fontSize: FontSize.md }}>
-          -{parseFloat(item.amount).toFixed(2)} {cur}
+          {money(-parseFloat(item.amount || 0))}
         </Text>
         <View style={styles.itemActions}>
           <TouchableOpacity
@@ -95,7 +96,7 @@ const ExpensesScreen = () => {
         </View>
         <View style={[styles.totalChip, { backgroundColor: accentSurface }]}>
           <Text style={{ color: accent, fontWeight: '800', fontSize: FontSize.md }}>
-            -{total.toFixed(2)} {cur}
+            {money(-total)}
           </Text>
         </View>
       </View>

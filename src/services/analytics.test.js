@@ -194,7 +194,7 @@ describe('getMonthlySeries', () => {
     const series = getMonthlySeries(buildTransactions(DATASET), { year: 2026 });
 
     expect(series).toHaveLength(12);
-    expect(series[8]).toMatchObject({ month: 8, label: 'Sep', total: 200 });
+    expect(series[8]).toMatchObject({ month: 8, label: 'Sept', total: 200 });
     expect(series[0].total).toBe(0);
   });
 

@@ -4,7 +4,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as storage from '../storage/storage';
 import { renderWithProviders } from '../testSupport/renderWithProviders';
 import AnalyticsScreen from './AnalyticsScreen';
+import { formatCurrency, formatPercent } from '../utils/format';
 import { currentPeriod, formatPeriod, shiftMonth } from '../utils/period';
+
+const money = (value) => formatCurrency(value, 'EUR', 'fr');
+const share = (value) => formatPercent(value, 'fr');
 
 const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
 
@@ -42,10 +46,10 @@ describe('AnalyticsScreen', () => {
     ]);
     const { getByLabelText } = renderWithProviders(<AnalyticsScreen />);
 
-    await waitFor(() => expect(getByLabelText('Dépenses : 200.00 €')).toBeTruthy());
+    await waitFor(() => expect(getByLabelText(`Dépenses : ${money(200)}`)).toBeTruthy());
     expect(getByLabelText('Transactions : 3')).toBeTruthy();
-    expect(getByLabelText('Plus grosse dépense : 120.00 €')).toBeTruthy();
-    expect(getByLabelText('Revenus : 500.00 €')).toBeTruthy();
+    expect(getByLabelText(`Plus grosse dépense : ${money(120)}`)).toBeTruthy();
+    expect(getByLabelText(`Revenus : ${money(500)}`)).toBeTruthy();
   });
 
   it('navigue vers le mois precedent', async () => {
@@ -58,7 +62,7 @@ describe('AnalyticsScreen', () => {
 
     fireEvent.press(getByLabelText(formatPeriod(previous)));
 
-    await waitFor(() => expect(getByLabelText('Dépenses : 90.00 €')).toBeTruthy());
+    await waitFor(() => expect(getByLabelText(`Dépenses : ${money(90)}`)).toBeTruthy());
   });
 
   it('bascule en vue annuelle et calcule la moyenne mensuelle', async () => {
@@ -74,7 +78,7 @@ describe('AnalyticsScreen', () => {
 
     await waitFor(() => expect(getByText('Moyenne mensuelle')).toBeTruthy());
     expect(getAllByText(String(today.year)).length).toBeGreaterThan(0);
-    expect(getByLabelText('Moyenne mensuelle : 200.00 €')).toBeTruthy();
+    expect(getByLabelText(`Moyenne mensuelle : ${money(200)}`)).toBeTruthy();
   });
 
   it('affiche la repartition par categorie', async () => {
@@ -85,9 +89,9 @@ describe('AnalyticsScreen', () => {
     const { getByLabelText } = renderWithProviders(<AnalyticsScreen />);
 
     await waitFor(() =>
-      expect(getByLabelText('Nourriture : 150.00 €, 75 %')).toBeTruthy()
+      expect(getByLabelText(`Nourriture : ${money(150)}, ${share(75)}`)).toBeTruthy()
     );
-    expect(getByLabelText('Transport : 50.00 €, 25 %')).toBeTruthy();
+    expect(getByLabelText(`Transport : ${money(50)}, ${share(25)}`)).toBeTruthy();
   });
 
   it('affiche un etat vide sans transaction', async () => {

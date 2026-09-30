@@ -1,12 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useFormat } from '../hooks/useFormat';
 import { useTheme } from '../theme/ThemeContext';
 import { BorderRadius, FontSize, Shadow, Spacing } from '../theme/colors';
 
 const CHART_HEIGHT = 120;
 
-const ExpenseTrendChart = ({ data, currency, selectedMonth, onSelectMonth, emptyLabel }) => {
+const ExpenseTrendChart = ({ data, selectedMonth, onSelectMonth, emptyLabel }) => {
   const { colors: C } = useTheme();
+  const { money } = useFormat();
   const maxValue = data.reduce((max, entry) => Math.max(max, entry.total), 0);
 
   if (maxValue === 0) {
@@ -30,7 +32,7 @@ const ExpenseTrendChart = ({ data, currency, selectedMonth, onSelectMonth, empty
               onPress={() => onSelectMonth && onSelectMonth(entry.month)}
               disabled={!onSelectMonth}
               accessibilityRole="button"
-              accessibilityLabel={`${entry.label} : ${entry.total.toFixed(2)} ${currency}`}
+              accessibilityLabel={`${entry.label} : ${money(entry.total)}`}
             >
               <View style={styles.barZone}>
                 <View
@@ -51,7 +53,7 @@ const ExpenseTrendChart = ({ data, currency, selectedMonth, onSelectMonth, empty
         })}
       </View>
       <Text style={[styles.scale, { color: C.textMuted }]}>
-        max {maxValue.toFixed(0)} {currency}
+        max {money(maxValue, { compact: true })}
       </Text>
     </View>
   );

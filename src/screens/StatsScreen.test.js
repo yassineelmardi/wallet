@@ -4,6 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as storage from '../storage/storage';
 import { renderWithProviders } from '../testSupport/renderWithProviders';
 import StatsScreen from './StatsScreen';
+import { formatCurrency, formatPercent } from '../utils/format';
+
+const money = (value, options) => formatCurrency(value, 'EUR', 'fr', options);
+const share = (value) => formatPercent(value, 'fr');
 
 const mockNavigation = { navigate: jest.fn() };
 
@@ -36,8 +40,8 @@ it('aggregates expenses by category and calculates budget usage', async () => {
   ]);
   const { getByText } = renderWithProviders(<StatsScreen />);
 
-  await waitFor(() => expect(getByText('50% du budget utilisé')).toBeTruthy());
-  expect(getByText('350 €')).toBeTruthy();
+  await waitFor(() => expect(getByText(`${share(50)} du budget utilisé`)).toBeTruthy());
+  expect(getByText(money(350, { compact: true }))).toBeTruthy();
   expect(getByText('150 €')).toBeTruthy();
 });
 
@@ -54,7 +58,7 @@ it('caps expense usage at one hundred percent when overspending', async () => {
   await storage.saveVariableExpenses([{ id: 'expense', amount: '250', category: 'food' }]);
   const { getByText } = renderWithProviders(<StatsScreen />);
 
-  await waitFor(() => expect(getByText('100% du budget utilisé')).toBeTruthy());
+  await waitFor(() => expect(getByText(`${share(100)} du budget utilisé`)).toBeTruthy());
 });
 
 it('shows the empty state only when both income and expenses are zero', async () => {

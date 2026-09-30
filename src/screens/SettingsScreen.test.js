@@ -15,17 +15,17 @@ beforeEach(async () => {
 afterEach(() => jest.restoreAllMocks());
 
 it('persists selected language, currency, and theme', async () => {
-  const { getByText } = renderWithProviders(<SettingsScreen />);
+  const { getByLabelText, getByText } = renderWithProviders(<SettingsScreen />);
   await waitFor(() => expect(getByText('Paramètres')).toBeTruthy());
 
   fireEvent.press(getByText('English'));
-  fireEvent.press(getByText('$'));
+  fireEvent.press(getByLabelText('USD $'));
   fireEvent.press(getByText('Clair'));
 
   await waitFor(() => expect(i18n.language).toBe('en'));
   await waitFor(async () => {
     await expect(storage.getSettings()).resolves.toEqual({
-      language: 'en', darkMode: true, currency: '$',
+      language: 'en', darkMode: true, currency: 'USD',
     });
     await expect(AsyncStorage.getItem('@wallet_theme')).resolves.toBe('light');
   });

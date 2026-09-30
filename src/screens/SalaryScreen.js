@@ -19,7 +19,7 @@ import { useApp } from '../context/AppContext';
 import { Colors, Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
 import { useTheme } from '../theme/ThemeContext';
 import { parsePositiveAmount } from '../utils/money';
-import { MONTHS } from '../utils/period';
+import { getMonths } from '../utils/period';
 
 // Ajoute la marge tactile manquante pour atteindre les 44px recommandés.
 const HIT_SLOP = { top: 6, bottom: 6, left: 6, right: 6 };
@@ -228,13 +228,14 @@ const SalaryScreen = ({ navigation }) => {
   // ─── Rendu item mensuel ──────────────────────────────────────────────────────
 
   const renderMonthlyItem = ({ item }) => {
+    const months = getMonths();
     const isCurrentMonth =
       item.month === new Date().getMonth() && item.year === new Date().getFullYear();
     return (
       <View style={[styles.monthlyCard, isCurrentMonth && styles.monthlyCardActive]}>
         <View style={styles.monthlyLeft}>
           <Text style={styles.monthlyPeriod}>
-            {MONTHS[item.month]} {item.year}
+            {months[item.month]} {item.year}
             {isCurrentMonth && (
               <Text style={styles.currentTag}> · ce mois</Text>
             )}
@@ -251,7 +252,7 @@ const SalaryScreen = ({ navigation }) => {
             onPress={() => navigation.navigate('AddMonthlySalary', { editItem: item })}
             style={[styles.actionBtn, styles.actionBtnEdit]}
             accessibilityRole="button"
-            accessibilityLabel={`Modifier le salaire de ${MONTHS[item.month]} ${item.year}`}
+            accessibilityLabel={`Modifier le salaire de ${months[item.month]} ${item.year}`}
             hitSlop={HIT_SLOP}
           >
             <Text style={styles.actionEdit}>✏️</Text>
@@ -260,7 +261,7 @@ const SalaryScreen = ({ navigation }) => {
             onPress={() => handleDeleteMonthly(item.id)}
             style={[styles.actionBtn, styles.actionBtnDelete]}
             accessibilityRole="button"
-            accessibilityLabel={`Supprimer le salaire de ${MONTHS[item.month]} ${item.year}`}
+            accessibilityLabel={`Supprimer le salaire de ${months[item.month]} ${item.year}`}
             hitSlop={HIT_SLOP}
           >
             <Text style={styles.actionDelete}>✕</Text>

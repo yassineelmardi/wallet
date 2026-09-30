@@ -3,6 +3,7 @@ import { Alert, Platform, SafeAreaView, ScrollView, StyleSheet, Switch, Text, To
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
 import { useTheme } from '../theme/ThemeContext';
+import { CURRENCIES, normalizeCurrency } from '../utils/format';
 import { Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
 
 const LANGUAGES = [
@@ -11,7 +12,7 @@ const LANGUAGES = [
   { code: 'ar', label: '\u0627\u0644\u0639\u0631\u0628\u064a\u0629',   flag: '\ud83c\uddf8\ud83c\udde6' },
 ];
 
-const CURRENCIES = ['\u20ac', '$', '\u00a3', 'MAD', 'DZD', 'TND'];
+const CURRENCY_CODES = Object.keys(CURRENCIES);
 
 const THEMES = [
   { key: 'dark',  label: 'Sombre',    icon: '\ud83c\udf11', desc: 'Interface fond\u00e9e sur le noir' },
@@ -176,16 +177,21 @@ const SettingsScreen = () => {
         <SectionTitle text={t('settings.currency')} />
         <View style={[styles.card, { backgroundColor: C.card }]}>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.xs }}>
-            {CURRENCIES.map((curr) => {
-              const active = settings.currency === curr;
+            {CURRENCY_CODES.map((code) => {
+              const active = normalizeCurrency(settings.currency) === code;
               return (
                 <TouchableOpacity
-                  key={curr}
+                  key={code}
                   style={{ paddingVertical: 8, paddingHorizontal: Spacing.md, borderRadius: BorderRadius.full, backgroundColor: active ? C.primary : C.cardAlt, borderWidth: 1, borderColor: active ? C.primary : C.border }}
-                  onPress={() => updateSettings({ currency: curr })}
+                  onPress={() => updateSettings({ currency: code })}
                   activeOpacity={0.7}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${code} ${CURRENCIES[code].symbol}`}
+                  accessibilityState={{ selected: active }}
                 >
-                  <Text style={{ color: active ? '#fff' : C.textSecondary, fontWeight: '700', fontSize: FontSize.sm }}>{curr}</Text>
+                  <Text style={{ color: active ? '#fff' : C.textSecondary, fontWeight: '700', fontSize: FontSize.sm }}>
+                    {code} {CURRENCIES[code].symbol}
+                  </Text>
                 </TouchableOpacity>
               );
             })}

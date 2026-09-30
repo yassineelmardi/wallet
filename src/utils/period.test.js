@@ -1,7 +1,7 @@
 import {
-  MONTHS,
   currentPeriod,
   formatPeriod,
+  getMonths,
   isSamePeriod,
   monthLabel,
   monthShortLabel,
@@ -66,10 +66,15 @@ describe('formatage', () => {
   });
 
   it('expose douze libelles de mois', () => {
-    expect(MONTHS).toHaveLength(12);
+    expect(getMonths()).toHaveLength(12);
     expect(monthLabel(0)).toBe('Janvier');
-    expect(monthShortLabel(8)).toBe('Sep');
+    expect(monthShortLabel(8)).toBe('Sept');
     expect(monthLabel(99)).toBe('');
+  });
+
+  it('suit la locale demandée', () => {
+    expect(monthLabel(0, 'en-US')).toBe('January');
+    expect(formatPeriod({ year: 2026, month: 8 }, 'en-US')).toBe('September 2026');
   });
 });
 

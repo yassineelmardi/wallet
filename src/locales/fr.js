@@ -18,6 +18,15 @@ export default {
       budgetUsed: 'Budget utilisé',
       noData: 'Aucune donnée ce mois',
       thisMonth: 'Ce mois',
+      activeSalary: 'Salaire actif',
+      additionalIncome: 'Revenus supplémentaires',
+      spent: 'Dépensé :',
+      budget: 'Budget :',
+    },
+    salary: {
+      monthly: 'MENSUEL',
+      global: 'GLOBAL',
+      undefined: 'NON DÉFINI',
     },
     // Revenus
     income: {
@@ -70,6 +79,7 @@ export default {
       byCategory: 'Par catégorie',
       monthly: 'Mensuel',
       incomeVsExpenses: 'Revenus vs Dépenses',
+      budgetUsedSuffix: '{{value}} du budget utilisé',
     },
     // Paramètres
     settings: {

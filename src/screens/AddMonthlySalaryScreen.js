@@ -15,7 +15,7 @@ import { useApp } from '../context/AppContext';
 import { Colors, Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
 import { useTheme } from '../theme/ThemeContext';
 import { parsePositiveAmount } from '../utils/money';
-import { MONTHS } from '../utils/period';
+import { getMonths } from '../utils/period';
 
 const generateId = () => `month-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
 
@@ -36,6 +36,7 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
   const { colors: C } = useTheme();
   const styles = makeStyles(C);
   const cur = settings.currency || '€';
+  const months = getMonths();
   const previewAmount = parsePositiveAmount(amount);
 
   const handleSave = () => {
@@ -55,7 +56,7 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
     if (duplicate) {
       Alert.alert(
         'Mois déjà défini',
-        `Un salaire existe déjà pour ${MONTHS[selectedMonth]} ${year}. Voulez-vous le remplacer ?`,
+        `Un salaire existe déjà pour ${months[selectedMonth]} ${year}. Voulez-vous le remplacer ?`,
         [
           { text: 'Annuler', style: 'cancel' },
           {
@@ -128,7 +129,7 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
           <View style={styles.card}>
             <Text style={styles.cardLabel}>Mois</Text>
             <View style={styles.monthGrid}>
-              {MONTHS.map((m, idx) => (
+              {months.map((m, idx) => (
                 <TouchableOpacity
                   key={idx}
                   style={[
@@ -174,7 +175,7 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
           <View style={styles.previewCard}>
             <Text style={styles.previewLabel}>Période sélectionnée</Text>
             <Text style={styles.previewValue}>
-              {MONTHS[selectedMonth]} {year}
+              {months[selectedMonth]} {year}
             </Text>
             {previewAmount !== null ? (
               <Text style={styles.previewAmount}>{previewAmount.toFixed(2)} {cur}</Text>

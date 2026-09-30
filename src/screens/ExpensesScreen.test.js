@@ -5,6 +5,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as storage from '../storage/storage';
 import { renderWithProviders } from '../testSupport/renderWithProviders';
 import ExpensesScreen from './ExpensesScreen';
+import { formatCurrency } from '../utils/format';
+
+const money = (value) => formatCurrency(value, 'EUR', 'fr');
 
 const mockNavigation = { navigate: jest.fn() };
 
@@ -25,9 +28,9 @@ describe('ExpensesScreen', () => {
     await storage.saveFixedExpenses([{ id: 'rent', amount: '700', category: 'rent' }]);
     const { getAllByText, getByText } = renderWithProviders(<ExpensesScreen />);
 
-    await waitFor(() => expect(getAllByText('-12.00 €')).toHaveLength(2));
+    await waitFor(() => expect(getAllByText(money(-12))).toHaveLength(2));
     fireEvent.press(getByText('Charges fixes'));
-    expect(getAllByText('-700.00 €')).toHaveLength(2);
+    expect(getAllByText(money(-700))).toHaveLength(2);
     fireEvent.press(getByText('+'));
 
     expect(mockNavigation.navigate).toHaveBeenCalledWith('AddExpense', { type: 'fixed' });
@@ -37,7 +40,7 @@ describe('ExpensesScreen', () => {
     await storage.saveVariableExpenses([{ id: 'food', amount: '12', category: 'food' }]);
     const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
     const { getAllByText, getByText } = renderWithProviders(<ExpensesScreen />);
-    await waitFor(() => expect(getAllByText('-12.00 €')).toHaveLength(2));
+    await waitFor(() => expect(getAllByText(money(-12))).toHaveLength(2));
 
     fireEvent.press(getByText('✕'));
     expect(alert).toHaveBeenCalledWith(

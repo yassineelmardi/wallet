@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useFormat } from '../hooks/useFormat';
 import { useTheme } from '../theme/ThemeContext';
 import { BorderRadius, FontSize, Shadow, Spacing } from '../theme/colors';
 
-const formatDelta = (delta) => `${delta > 0 ? '+' : ''}${delta.toFixed(1)} %`;
-
-const ComparisonCard = ({ label, currentLabel, previousLabel, current, previous, delta, currency, lowerIsBetter }) => {
+const ComparisonCard = ({ label, currentLabel, previousLabel, current, previous, delta, lowerIsBetter }) => {
   const { colors: C } = useTheme();
+  const { money, percent } = useFormat();
   const hasDelta = typeof delta === 'number' && Number.isFinite(delta);
   const improving = hasDelta && (lowerIsBetter ? delta < 0 : delta > 0);
   const tone = !hasDelta || delta === 0 ? C.textMuted : improving ? C.success : C.error;
@@ -19,20 +19,20 @@ const ComparisonCard = ({ label, currentLabel, previousLabel, current, previous,
         <View style={styles.side}>
           <Text style={[styles.period, { color: C.textMuted }]} numberOfLines={1}>{currentLabel}</Text>
           <Text style={[styles.amount, { color: C.textPrimary }]} numberOfLines={1}>
-            {current.toFixed(2)} {currency}
+            {money(current)}
           </Text>
         </View>
 
         <View style={[styles.badge, { backgroundColor: tone + '22' }]}>
           <Text style={[styles.badgeText, { color: tone }]}>
-            {hasDelta ? formatDelta(delta) : '—'}
+            {hasDelta ? `${delta > 0 ? '+' : ''}${percent(delta, 1)}` : '—'}
           </Text>
         </View>
 
         <View style={[styles.side, styles.sideRight]}>
           <Text style={[styles.period, { color: C.textMuted }]} numberOfLines={1}>{previousLabel}</Text>
           <Text style={[styles.amount, { color: C.textSecondary }]} numberOfLines={1}>
-            {previous.toFixed(2)} {currency}
+            {money(previous)}
           </Text>
         </View>
       </View>

@@ -3,6 +3,7 @@ import { SafeAreaView, SectionList, StyleSheet, Text, TouchableOpacity, View } f
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
+import { useFormat } from '../hooks/useFormat';
 import { useTheme } from '../theme/ThemeContext';
 import { BorderRadius, FontSize, Shadow, Spacing } from '../theme/colors';
 import MonthSelector from '../components/MonthSelector';
@@ -16,7 +17,7 @@ const HistoryScreen = () => {
   const navigation = useNavigation();
   const { colors: C } = useTheme();
   const { income, variableExpenses, monthlySalaries, settings } = useApp();
-  const cur = settings.currency || '€';
+  const { money, date: formatDay } = useFormat();
 
   const today = currentPeriod();
   const [mode, setMode] = useState('month');
@@ -80,11 +81,11 @@ const HistoryScreen = () => {
             {label}
           </Text>
           <Text style={{ color: C.textMuted, fontSize: FontSize.xs, marginTop: 2 }}>
-            {categoryLabel} · {item.date}
+            {categoryLabel} · {formatDay(item.date)}
           </Text>
         </View>
         <Text style={{ color: tone, fontWeight: '700', fontSize: FontSize.md }}>
-          {isExpense ? '-' : '+'}{item.amount.toFixed(2)} {cur}
+          {money(isExpense ? -item.amount : item.amount, { signDisplay: 'always' })}
         </Text>
       </View>
     );
@@ -125,10 +126,10 @@ const HistoryScreen = () => {
 
         <View style={styles.totals}>
           <Text style={{ color: C.success, fontWeight: '700', fontSize: FontSize.sm }}>
-            +{totals.income.toFixed(2)} {cur}
+            {money(totals.income, { signDisplay: 'always' })}
           </Text>
           <Text style={{ color: C.accentWarn, fontWeight: '700', fontSize: FontSize.sm }}>
-            -{totals.expenses.toFixed(2)} {cur}
+            {money(-totals.expenses, { signDisplay: 'always' })}
           </Text>
         </View>
       </View>

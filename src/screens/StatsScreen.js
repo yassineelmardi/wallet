@@ -3,6 +3,7 @@ import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-na
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
+import { useFormat } from '../hooks/useFormat';
 import { useTheme } from '../theme/ThemeContext';
 import { Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
 
@@ -17,7 +18,7 @@ const StatsScreen = () => {
   const navigation = useNavigation();
   const { colors: C } = useTheme();
   const { variableExpenses, fixedExpenses, totalIncome, totalFixed, totalVariable, settings } = useApp();
-  const cur = settings.currency || '\u20ac';
+  const { money, percent } = useFormat();
 
   const allExpenses = [...fixedExpenses, ...variableExpenses];
   const byCategory = allExpenses.reduce((acc, item) => {
@@ -65,7 +66,7 @@ const StatsScreen = () => {
           {overviewData.map((item) => (
             <View key={item.label} style={{ flex:1, minWidth:'45%', backgroundColor: C.card, borderRadius: BorderRadius.lg, padding: Spacing.md, borderTopWidth:3, borderTopColor: item.color, ...Shadow.sm }}>
               <Text style={{ color: C.textSecondary, fontSize: FontSize.xs, marginBottom: Spacing.xs }}>{item.label}</Text>
-              <Text style={{ color: item.color, fontSize: FontSize.lg, fontWeight:'700' }}>{item.amount.toFixed(2)} {cur}</Text>
+              <Text style={{ color: item.color, fontSize: FontSize.lg, fontWeight:'700' }}>{money(item.amount)}</Text>
             </View>
           ))}
         </View>
@@ -80,19 +81,19 @@ const StatsScreen = () => {
               <View style={{ width:10, height:10, borderRadius:5, backgroundColor: C.success }} />
               <Text style={{ color: C.textSecondary, fontSize: FontSize.sm }}>{t('nav.income')}</Text>
             </View>
-            <Text style={{ color: C.success, fontSize: FontSize.md, fontWeight:'700' }}>{totalIncome.toFixed(2)} {cur}</Text>
+            <Text style={{ color: C.success, fontSize: FontSize.md, fontWeight:'700' }}>{money(totalIncome)}</Text>
           </View>
           <View style={{ flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginBottom: Spacing.md }}>
             <View style={{ flexDirection:'row', alignItems:'center', gap: Spacing.xs }}>
               <View style={{ width:10, height:10, borderRadius:5, backgroundColor: C.accentWarn }} />
               <Text style={{ color: C.textSecondary, fontSize: FontSize.sm }}>{t('nav.expenses')}</Text>
             </View>
-            <Text style={{ color: C.accentWarn, fontSize: FontSize.md, fontWeight:'700' }}>{totalExpenses.toFixed(2)} {cur}</Text>
+            <Text style={{ color: C.accentWarn, fontSize: FontSize.md, fontWeight:'700' }}>{money(totalExpenses)}</Text>
           </View>
           <View style={{ height:8, backgroundColor: C.success, borderRadius: BorderRadius.full, overflow:'hidden' }}>
             <View style={{ width: expensePct + '%', height:'100%', backgroundColor: C.accentWarn, borderRadius: BorderRadius.full }} />
           </View>
-          <Text style={{ color: C.textMuted, fontSize: FontSize.xs, marginTop: Spacing.xs, textAlign:'right' }}>{expensePct.toFixed(0)}% du budget utilisé</Text>
+          <Text style={{ color: C.textMuted, fontSize: FontSize.xs, marginTop: Spacing.xs, textAlign:'right' }}>{t('stats.budgetUsedSuffix', { value: percent(expensePct) })}</Text>
         </View>
 
         {/* By category */}
@@ -113,7 +114,7 @@ const StatsScreen = () => {
                       <View style={{ flex:1, height:8, backgroundColor: C.border, borderRadius: BorderRadius.full, overflow:'hidden' }}>
                         <View style={{ width: pct + '%', height:'100%', backgroundColor: col, borderRadius: BorderRadius.full }} />
                       </View>
-                      <Text style={{ color: col, fontSize: FontSize.xs, fontWeight:'700', width:55, textAlign:'right' }}>{amount.toFixed(0)} {cur}</Text>
+                      <Text style={{ color: col, fontSize: FontSize.xs, fontWeight:'700', width:55, textAlign:'right' }}>{money(amount, { compact: true })}</Text>
                     </View>
                   );
                 })}

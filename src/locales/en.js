@@ -16,6 +16,15 @@ export default {
       budgetUsed: 'Budget Used',
       noData: 'No data this month',
       thisMonth: 'This month',
+      activeSalary: 'Active salary',
+      additionalIncome: 'Additional income',
+      spent: 'Spent:',
+      budget: 'Budget:',
+    },
+    salary: {
+      monthly: 'MONTHLY',
+      global: 'GLOBAL',
+      undefined: 'NOT SET',
     },
     income: {
       title: 'My Income',
@@ -65,6 +74,7 @@ export default {
       byCategory: 'By Category',
       monthly: 'Monthly',
       incomeVsExpenses: 'Income vs Expenses',
+      budgetUsedSuffix: '{{value}} of budget used',
     },
     settings: {
       title: 'Settings',

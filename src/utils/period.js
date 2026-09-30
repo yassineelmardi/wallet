@@ -1,9 +1,11 @@
-export const MONTHS = [
-  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
-];
+import i18n from '../locales/i18n';
+import { getMonthNames } from './format';
 
 export const MONTH_COUNT = 12;
+
+const activeLocale = (locale) => locale || i18n.language || 'fr';
+
+export const getMonths = (locale) => getMonthNames(activeLocale(locale));
 
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
 
@@ -32,12 +34,13 @@ export const shiftMonth = ({ year, month }, delta) => {
   };
 };
 
-export const monthLabel = (month) => MONTHS[month] || '';
+export const monthLabel = (month, locale) => getMonthNames(activeLocale(locale))[month] || '';
 
-export const monthShortLabel = (month) => (MONTHS[month] || '').slice(0, 3);
+export const monthShortLabel = (month, locale) =>
+  getMonthNames(activeLocale(locale), 'short')[month] || '';
 
-export const formatPeriod = ({ year, month }) =>
-  month === undefined || month === null ? String(year) : `${monthLabel(month)} ${year}`;
+export const formatPeriod = ({ year, month }, locale) =>
+  month === undefined || month === null ? String(year) : `${monthLabel(month, locale)} ${year}`;
 
 export const toMonthKey = ({ year, month }) =>
   `${year}-${String(month + 1).padStart(2, '0')}`;
