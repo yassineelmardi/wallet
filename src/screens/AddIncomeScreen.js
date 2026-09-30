@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
 import { Colors, Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
@@ -30,12 +30,14 @@ const today = () => new Date().toISOString().split('T')[0];
 const AddIncomeScreen = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const { addIncome } = useApp();
+  const route = useRoute();
+  const editItem = route.params?.editItem || null;
+  const { addIncome, updateIncome } = useApp();
 
-  const [amount, setAmount] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('salary');
-  const [date, setDate] = useState(today());
+  const [amount, setAmount] = useState(editItem ? String(editItem.amount) : '');
+  const [description, setDescription] = useState(editItem?.description || '');
+  const [category, setCategory] = useState(editItem?.category || 'salary');
+  const [date, setDate] = useState(editItem?.date || today());
 
   const handleSave = async () => {
     const parsedAmount = parsePositiveAmount(amount);
@@ -43,13 +45,12 @@ const AddIncomeScreen = () => {
       Alert.alert('', t('common.invalidAmount'));
       return;
     }
-    await addIncome({
-      id: Date.now().toString(),
-      amount: parsedAmount,
-      description,
-      category,
-      date,
-    });
+    const payload = { amount: parsedAmount, description, category, date };
+    if (editItem) {
+      await updateIncome(editItem.id, payload);
+    } else {
+      await addIncome({ id: Date.now().toString(), ...payload });
+    }
     navigation.goBack();
   };
 
@@ -65,7 +66,7 @@ const AddIncomeScreen = () => {
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Text style={styles.cancel}>{t('common.cancel')}</Text>
             </TouchableOpacity>
-            <Text style={styles.title}>{t('income.addIncome')}</Text>
+            <Text style={styles.title}>{editItem ? t('common.edit') : t('income.addIncome')}</Text>
             <TouchableOpacity onPress={handleSave}>
               <Text style={styles.saveBtn}>{t('common.save')}</Text>
             </TouchableOpacity>
@@ -81,7 +82,7 @@ const AddIncomeScreen = () => {
               keyboardType="numeric"
               value={amount}
               onChangeText={setAmount}
-              autoFocus
+              autoFocus={!editItem}
             />
           </View>
 

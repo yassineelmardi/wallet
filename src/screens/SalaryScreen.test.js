@@ -184,4 +184,16 @@ describe('SalaryScreen', () => {
     expect(queryByPlaceholderText('ex: 3000')).toBeNull();
     await expect(storage.getGlobalSalary()).resolves.toBeNull();
   });
+
+  it('ouvre le formulaire d edition avec le revenu selectionne', async () => {
+    const existing = { id: 'bonus', amount: '100', category: 'bonus', description: 'Annual bonus' };
+    await storage.saveIncome([existing]);
+    const { getByLabelText, getByText } = renderScreen();
+    await waitFor(() => expect(getByText('Salaires')).toBeTruthy());
+
+    fireEvent.press(getByText('Revenus suppl.'));
+    fireEvent.press(getByLabelText('Modifier ce revenu'));
+
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('AddIncome', { editItem: existing });
+  });
 });

@@ -80,4 +80,77 @@ describe('AddExpenseScreen', () => {
     await expect(storage.getVariableExpenses()).resolves.toEqual([]);
     }
   );
+
+  describe('mode edition', () => {
+    const variableItem = {
+      id: 'variable-1',
+      amount: 12.5,
+      description: 'Courses',
+      category: 'food',
+      date: '2026-09-01',
+    };
+    const fixedItem = {
+      id: 'fixed-1',
+      amount: 800,
+      description: 'Loyer',
+      category: 'rent',
+    };
+
+    it('pre-remplit le formulaire avec la depense variable existante', async () => {
+      await storage.saveVariableExpenses([variableItem]);
+      mockRoute.params = { type: 'variable', editItem: variableItem };
+      const { getByDisplayValue, getByText } = renderWithProviders(<AddExpenseScreen />);
+
+      await waitFor(() => expect(getByDisplayValue('12.5')).toBeTruthy());
+      expect(getByDisplayValue('Courses')).toBeTruthy();
+      expect(getByDisplayValue('2026-09-01')).toBeTruthy();
+      expect(getByText('Modifier')).toBeTruthy();
+    });
+
+    it('met a jour la depense variable sans creer de doublon', async () => {
+      await storage.saveVariableExpenses([variableItem]);
+      mockRoute.params = { type: 'variable', editItem: variableItem };
+      const { getByDisplayValue, getByText } = renderWithProviders(<AddExpenseScreen />);
+      await waitFor(() => expect(getByDisplayValue('12.5')).toBeTruthy());
+
+      fireEvent.changeText(getByDisplayValue('12.5'), '20');
+      fireEvent.press(getByText('Transport'));
+      fireEvent.press(getByText('Enregistrer'));
+
+      await waitFor(() => expect(mockNavigation.goBack).toHaveBeenCalledTimes(1));
+      await expect(storage.getVariableExpenses()).resolves.toEqual([
+        { ...variableItem, amount: 20, category: 'transport' },
+      ]);
+    });
+
+    it('met a jour la charge fixe en conservant son identifiant', async () => {
+      await storage.saveFixedExpenses([fixedItem]);
+      mockRoute.params = { type: 'fixed', editItem: fixedItem };
+      const { getByDisplayValue, getByText } = renderWithProviders(<AddExpenseScreen />);
+      await waitFor(() => expect(getByDisplayValue('800')).toBeTruthy());
+
+      fireEvent.changeText(getByDisplayValue('800'), '850');
+      fireEvent.press(getByText('Enregistrer'));
+
+      await waitFor(() => expect(mockNavigation.goBack).toHaveBeenCalledTimes(1));
+      await expect(storage.getFixedExpenses()).resolves.toEqual([
+        { ...fixedItem, amount: 850 },
+      ]);
+    });
+
+    it('refuse un montant invalide et laisse la depense inchangee', async () => {
+      await storage.saveVariableExpenses([variableItem]);
+      mockRoute.params = { type: 'variable', editItem: variableItem };
+      const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+      const { getByDisplayValue, getByText } = renderWithProviders(<AddExpenseScreen />);
+      await waitFor(() => expect(getByDisplayValue('12.5')).toBeTruthy());
+
+      fireEvent.changeText(getByDisplayValue('12.5'), '-5');
+      fireEvent.press(getByText('Enregistrer'));
+
+      expect(alert).toHaveBeenCalledWith('', 'Montant invalide');
+      expect(mockNavigation.goBack).not.toHaveBeenCalled();
+      await expect(storage.getVariableExpenses()).resolves.toEqual([variableItem]);
+    });
+  });
 });

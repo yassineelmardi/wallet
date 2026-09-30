@@ -12,6 +12,9 @@ const CAT_ICONS = {
   credit:'\ud83d\udcb3', other:'\ud83d\udce6',
 };
 
+// Ajoute la marge tactile manquante pour atteindre les 44px recommandés.
+const HIT_SLOP = { top: 6, bottom: 6, left: 6, right: 6 };
+
 const ExpensesScreen = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -56,9 +59,26 @@ const ExpensesScreen = () => {
         <Text style={{ color: accent, fontWeight: '700', fontSize: FontSize.md }}>
           -{parseFloat(item.amount).toFixed(2)} {cur}
         </Text>
-        <TouchableOpacity onPress={() => handleDelete(item.id)} style={{ padding: 4, marginTop: 2 }}>
-          <Text style={{ color: C.error, fontSize: 13 }}>✕</Text>
-        </TouchableOpacity>
+        <View style={styles.itemActions}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('AddExpense', { type: tab, editItem: item })}
+            style={[styles.actionBtn, { backgroundColor: C.primarySurface }]}
+            accessibilityRole="button"
+            accessibilityLabel={`${t('common.edit')} ${item.description || t('expenses.categories.' + item.category)}`}
+            hitSlop={HIT_SLOP}
+          >
+            <Text style={styles.actionEdit}>✏️</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleDelete(item.id)}
+            style={[styles.actionBtn, { backgroundColor: C.accentWarnSurface }]}
+            accessibilityRole="button"
+            accessibilityLabel={`${t('common.delete')} ${item.description || t('expenses.categories.' + item.category)}`}
+            hitSlop={HIT_SLOP}
+          >
+            <Text style={[styles.actionDelete, { color: C.error }]}>✕</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -129,6 +149,10 @@ const styles = StyleSheet.create({
   tab: { flex: 1, paddingVertical: Spacing.md, alignItems: 'center' },
   item: { borderRadius: BorderRadius.lg, padding: Spacing.md, marginBottom: Spacing.sm, flexDirection: 'row', alignItems: 'center', borderLeftWidth: 3, ...Shadow.sm },
   iconWrap: { width: 44, height: 44, borderRadius: BorderRadius.md, alignItems: 'center', justifyContent: 'center' },
+  itemActions: { flexDirection: 'row', gap: Spacing.xs, marginTop: Spacing.xs },
+  actionBtn: { width: 36, height: 36, borderRadius: BorderRadius.md, alignItems: 'center', justifyContent: 'center' },
+  actionEdit: { fontSize: 15 },
+  actionDelete: { fontSize: 14, fontWeight: '700' },
   fab: { position:'absolute', bottom:24, right:24, width:56, height:56, borderRadius:28, alignItems:'center', justifyContent:'center' },
 });
 

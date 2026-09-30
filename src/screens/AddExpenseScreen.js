@@ -42,18 +42,19 @@ const AddExpenseScreen = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const route = useRoute();
+  const editItem = route.params?.editItem || null;
   const type = route.params?.type || 'variable';
   const isFixed = type === 'fixed';
 
   const { colors: C } = useTheme();
-  const { addFixed, addVariable } = useApp();
+  const { addFixed, addVariable, updateFixed, updateVariable } = useApp();
   const categories = isFixed ? FIXED_CATS : VARIABLE_CATS;
   const accentColor = isFixed ? C.accentYellow : C.accentWarn;
 
-  const [amount, setAmount] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState(categories[0].key);
-  const [date, setDate] = useState(today());
+  const [amount, setAmount] = useState(editItem ? String(editItem.amount) : '');
+  const [description, setDescription] = useState(editItem?.description || '');
+  const [category, setCategory] = useState(editItem?.category || categories[0].key);
+  const [date, setDate] = useState(editItem?.date || today());
 
   const handleSave = async () => {
     const parsedAmount = parsePositiveAmount(amount);
@@ -61,17 +62,17 @@ const AddExpenseScreen = () => {
       Alert.alert('', t('common.invalidAmount'));
       return;
     }
-    const item = {
-      id: Date.now().toString(),
+    const payload = {
       amount: parsedAmount,
       description,
       category,
       date: isFixed ? undefined : date,
     };
-    if (isFixed) {
-      await addFixed(item);
+    if (editItem) {
+      await (isFixed ? updateFixed : updateVariable)(editItem.id, payload);
     } else {
-      await addVariable(item);
+      const item = { id: Date.now().toString(), ...payload };
+      await (isFixed ? addFixed : addVariable)(item);
     }
     navigation.goBack();
   };
@@ -88,7 +89,9 @@ const AddExpenseScreen = () => {
               <Text style={styles.cancel}>{t('common.cancel')}</Text>
             </TouchableOpacity>
             <Text style={styles.title}>
-              {isFixed ? t('expenses.addFixed') : t('expenses.addVariable')}
+              {editItem
+                ? t('common.edit')
+                : isFixed ? t('expenses.addFixed') : t('expenses.addVariable')}
             </Text>
             <TouchableOpacity onPress={handleSave}>
               <Text style={[styles.saveBtn, { color: accentColor }]}>{t('common.save')}</Text>
@@ -105,7 +108,7 @@ const AddExpenseScreen = () => {
               keyboardType="numeric"
               value={amount}
               onChangeText={setAmount}
-              autoFocus
+              autoFocus={!editItem}
             />
           </View>
 

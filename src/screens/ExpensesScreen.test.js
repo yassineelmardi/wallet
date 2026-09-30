@@ -68,4 +68,33 @@ describe('ExpensesScreen', () => {
 
     await waitFor(async () => expect(storage.getFixedExpenses()).resolves.toEqual([]));
   });
+
+  it('ouvre le formulaire d edition avec la depense variable selectionnee', async () => {
+    const existing = { id: 'food', amount: '12', category: 'food', date: '2026-09-01' };
+    await storage.saveVariableExpenses([existing]);
+    const { getByLabelText } = renderWithProviders(<ExpensesScreen />);
+    await waitFor(() => expect(getByLabelText('Modifier Nourriture')).toBeTruthy());
+
+    fireEvent.press(getByLabelText('Modifier Nourriture'));
+
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('AddExpense', {
+      type: 'variable',
+      editItem: existing,
+    });
+  });
+
+  it('ouvre le formulaire d edition avec la charge fixe selectionnee', async () => {
+    const existing = { id: 'rent', amount: '700', category: 'rent', description: 'Loyer' };
+    await storage.saveFixedExpenses([existing]);
+    const { getByLabelText, getByText } = renderWithProviders(<ExpensesScreen />);
+    await waitFor(() => expect(getByText('Charges fixes')).toBeTruthy());
+
+    fireEvent.press(getByText('Charges fixes'));
+    fireEvent.press(getByLabelText('Modifier Loyer'));
+
+    expect(mockNavigation.navigate).toHaveBeenCalledWith('AddExpense', {
+      type: 'fixed',
+      editItem: existing,
+    });
+  });
 });

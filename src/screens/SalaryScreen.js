@@ -303,6 +303,15 @@ const SalaryScreen = ({ navigation }) => {
         ) : null}
       </View>
       <TouchableOpacity
+        onPress={() => navigation.navigate('AddIncome', { editItem: item })}
+        style={[styles.actionBtn, styles.actionBtnEdit]}
+        accessibilityRole="button"
+        accessibilityLabel="Modifier ce revenu"
+        hitSlop={HIT_SLOP}
+      >
+        <Text style={styles.actionEdit}>✏️</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
         onPress={() => handleDeleteIncome(item.id)}
         style={[styles.actionBtn, styles.actionBtnDelete]}
         accessibilityRole="button"
@@ -602,7 +611,7 @@ const makeStyles = (C) => StyleSheet.create({
   incomeLeft: { flex: 1 },
   incomeCategory: { color: C.textPrimary, fontSize: FontSize.sm, fontWeight: '600', textTransform: 'capitalize' },
   incomeDesc: { color: C.textMuted, fontSize: FontSize.xs, marginTop: 2 },
-  incomeRight: { alignItems: 'flex-end', marginRight: Spacing.sm },
+  incomeRight: { alignItems: 'flex-end', marginRight: Spacing.xs },
   incomeAmount: { fontSize: FontSize.sm, fontWeight: '700' },
   incomeDate: { color: C.textMuted, fontSize: FontSize.xs, marginTop: 2 },
 
