@@ -12,6 +12,8 @@ import {
   Platform,
 } from 'react-native';
 import { useApp } from '../context/AppContext';
+import { useTranslation } from 'react-i18next';
+import { useFormat } from '../hooks/useFormat';
 import { Colors, Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
 import { useTheme } from '../theme/ThemeContext';
 import { parsePositiveAmount } from '../utils/money';
@@ -20,6 +22,7 @@ import { getMonths } from '../utils/period';
 const generateId = () => `month-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
 
 const AddMonthlySalaryScreen = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const editItem = route.params?.editItem || null;
   const now = new Date();
 
@@ -34,6 +37,7 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
 
   const { setSalaryForMonth, monthlySalaries, settings } = useApp();
   const { colors: C } = useTheme();
+  const { money } = useFormat();
   const styles = makeStyles(C);
   const cur = settings.currency || '€';
   const months = getMonths();
@@ -42,7 +46,7 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
   const handleSave = () => {
     const val = parsePositiveAmount(amount);
     if (val === null) {
-      Alert.alert('Erreur', 'Veuillez entrer un montant valide.');
+      Alert.alert(t('salary.invalidAmountTitle'), t('salary.invalidAmountMessage'));
       return;
     }
 
@@ -55,12 +59,12 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
     );
     if (duplicate) {
       Alert.alert(
-        'Mois déjà défini',
-        `Un salaire existe déjà pour ${months[selectedMonth]} ${year}. Voulez-vous le remplacer ?`,
+        t('salary.duplicateTitle'),
+        t('salary.duplicateMessage', { period: `${months[selectedMonth]} ${year}` }),
         [
-          { text: 'Annuler', style: 'cancel' },
+          { text: t('common.cancel'), style: 'cancel' },
           {
-            text: 'Remplacer',
+            text: t('salary.replace'),
             onPress: () => {
               setSalaryForMonth({
                 id: duplicate.id,
@@ -92,13 +96,13 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerBtn}>
-          <Text style={styles.cancelText}>Annuler</Text>
+          <Text style={styles.cancelText}>{t('common.cancel')}</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>
-          {editItem ? 'Modifier le salaire' : 'Salaire mensuel'}
+          {editItem ? t('salary.editTitle') : t('salary.newTitle')}
         </Text>
         <TouchableOpacity onPress={handleSave} style={styles.headerBtn}>
-          <Text style={styles.saveText}>Enregistrer</Text>
+          <Text style={styles.saveText}>{t('common.save')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -110,7 +114,7 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
 
           {/* Montant */}
           <View style={styles.amountSection}>
-            <Text style={styles.amountLabel}>Montant du salaire</Text>
+            <Text style={styles.amountLabel}>{t('salary.amountLabel')}</Text>
             <View style={styles.amountRow}>
               <TextInput
                 style={styles.amountInput}
@@ -127,7 +131,7 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
 
           {/* Sélection du mois */}
           <View style={styles.card}>
-            <Text style={styles.cardLabel}>Mois</Text>
+            <Text style={styles.cardLabel}>{t('salary.month')}</Text>
             <View style={styles.monthGrid}>
               {months.map((m, idx) => (
                 <TouchableOpacity
@@ -153,7 +157,7 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
 
           {/* Sélection de l'année */}
           <View style={styles.card}>
-            <Text style={styles.cardLabel}>Année</Text>
+            <Text style={styles.cardLabel}>{t('salary.year')}</Text>
             <View style={styles.yearRow}>
               <TouchableOpacity
                 style={styles.yearBtn}
@@ -173,23 +177,23 @@ const AddMonthlySalaryScreen = ({ navigation, route }) => {
 
           {/* Aperçu de la période sélectionnée */}
           <View style={styles.previewCard}>
-            <Text style={styles.previewLabel}>Période sélectionnée</Text>
+            <Text style={styles.previewLabel}>{t('salary.selectedPeriod')}</Text>
             <Text style={styles.previewValue}>
               {months[selectedMonth]} {year}
             </Text>
             {previewAmount !== null ? (
-              <Text style={styles.previewAmount}>{previewAmount.toFixed(2)} {cur}</Text>
+              <Text style={styles.previewAmount}>{money(previewAmount)}</Text>
             ) : null}
           </View>
 
           {/* Note optionnelle */}
           <View style={styles.card}>
-            <Text style={styles.cardLabel}>Note (optionnel)</Text>
+            <Text style={styles.cardLabel}>{t('salary.note')}</Text>
             <TextInput
               style={styles.noteInput}
               value={label}
               onChangeText={setLabel}
-              placeholder="ex: Prime incluse, congé sans solde…"
+              placeholder={t('salary.monthNotePlaceholder')}
               placeholderTextColor={C.textMuted}
               multiline
             />

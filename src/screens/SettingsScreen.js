@@ -2,6 +2,7 @@ import React from 'react';
 import { Alert, Platform, SafeAreaView, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
+import { shareExport } from '../services/shareExport';
 import { useTheme } from '../theme/ThemeContext';
 import { CURRENCIES, normalizeCurrency } from '../utils/format';
 import { Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
@@ -14,16 +15,32 @@ const LANGUAGES = [
 
 const CURRENCY_CODES = Object.keys(CURRENCIES);
 
-const THEMES = [
-  { key: 'dark',  label: 'Sombre',    icon: '\ud83c\udf11', desc: 'Interface fond\u00e9e sur le noir' },
-  { key: 'light', label: 'Clair',     icon: '\u2600\ufe0f',  desc: 'Interface fond\u00e9e sur le blanc' },
-  { key: 'auto',  label: 'Automatique', icon: '\ud83d\udcf1', desc: 'Suit le th\u00e8me syst\u00e8me' },
+const THEME_KEYS = [
+  { key: 'dark', icon: '\ud83c\udf11' },
+  { key: 'light', icon: '\u2600\ufe0f' },
+  { key: 'auto', icon: '\ud83d\udcf1' },
 ];
 
 const SettingsScreen = () => {
   const { t } = useTranslation();
-  const { settings, updateSettings, resetData, loadDemoData } = useApp();
+  const app = useApp();
+  const { settings, updateSettings, resetData, loadDemoData } = app;
   const { colors: C, themeMode, setTheme, isDark, paletteId, setPalette, palettes } = useTheme();
+
+  const handleExport = async (format) => {
+    try {
+      await shareExport(format, {
+        income: app.income,
+        fixedExpenses: app.fixedExpenses,
+        variableExpenses: app.variableExpenses,
+        monthlySalaries: app.monthlySalaries,
+        globalSalary: app.globalSalary,
+        settings,
+      });
+    } catch (error) {
+      Alert.alert(t('settings.exportFailed'), String(error?.message || error));
+    }
+  };
 
   const handleReset = () => {
     if (Platform.OS === 'web') {
@@ -60,13 +77,13 @@ const SettingsScreen = () => {
         {/* Header */}
         <View style={[styles.header, { backgroundColor: C.surface, borderBottomColor: C.border }]}>
           <Text style={{ color: C.textPrimary, fontSize: FontSize.xl, fontWeight: '800' }}>{t('settings.title')}</Text>
-          <Text style={{ color: C.textMuted, fontSize: FontSize.xs, marginTop: 2 }}>Personnalisez votre app</Text>
+          <Text style={{ color: C.textMuted, fontSize: FontSize.xs, marginTop: 2 }}>{t('settings.subtitle')}</Text>
         </View>
 
         {/* Theme picker */}
-        <SectionTitle text="Thème" />
+        <SectionTitle text={t('settings.theme')} />
         <View style={[styles.card, { backgroundColor: C.card }]}>
-          {THEMES.map((th, i) => {
+          {THEME_KEYS.map((th, i) => {
             const active = themeMode === th.key;
             return (
               <TouchableOpacity
@@ -75,14 +92,20 @@ const SettingsScreen = () => {
                 style={[
                   styles.themeRow,
                   active && { backgroundColor: C.primarySurface },
-                  i < THEMES.length - 1 && { borderBottomWidth: 1, borderBottomColor: C.borderLight },
+                  i < THEME_KEYS.length - 1 && { borderBottomWidth: 1, borderBottomColor: C.borderLight },
                 ]}
                 activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel={t(`settings.theme${th.key.charAt(0).toUpperCase()}${th.key.slice(1)}`)}
               >
                 <Text style={{ fontSize: 22, marginRight: Spacing.sm }}>{th.icon}</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: active ? C.primary : C.textPrimary, fontWeight: '700', fontSize: FontSize.md }}>{th.label}</Text>
-                  <Text style={{ color: C.textMuted, fontSize: FontSize.xs, marginTop: 1 }}>{th.desc}</Text>
+                  <Text style={{ color: active ? C.primary : C.textPrimary, fontWeight: '700', fontSize: FontSize.md }}>
+                    {t(`settings.theme${th.key.charAt(0).toUpperCase()}${th.key.slice(1)}`)}
+                  </Text>
+                  <Text style={{ color: C.textMuted, fontSize: FontSize.xs, marginTop: 1 }}>
+                    {t(`settings.theme${th.key.charAt(0).toUpperCase()}${th.key.slice(1)}Hint`)}
+                  </Text>
                 </View>
                 {active && (
                   <View style={[styles.activeDot, { backgroundColor: C.primary }]}>
@@ -95,7 +118,7 @@ const SettingsScreen = () => {
         </View>
 
         {/* Palette picker */}
-        <SectionTitle text="Palette" />
+        <SectionTitle text={t('settings.palette')} />
         <View style={[styles.card, { backgroundColor: C.card }]}>
           {Object.values(palettes).map((palette, i) => {
             const active = paletteId === palette.id;
@@ -135,10 +158,10 @@ const SettingsScreen = () => {
 
         {/* Preview */}
         <View style={[styles.previewCard, { backgroundColor: C.card, borderColor: C.border }]}>
-          <Text style={{ color: C.textMuted, fontSize: FontSize.xs, fontWeight: '600', marginBottom: Spacing.sm }}>APERÇU DU THÈME ACTIF</Text>
+          <Text style={{ color: C.textMuted, fontSize: FontSize.xs, fontWeight: '600', marginBottom: Spacing.sm }}>{t('settings.themePreview')}</Text>
           <View style={[styles.previewInner, { backgroundColor: C.background }]}>
             <View style={[styles.previewHero, { backgroundColor: C.primary }]}>
-              <Text style={{ color: '#fff', fontWeight: '800', fontSize: FontSize.sm }}>Solde du mois</Text>
+              <Text style={{ color: '#fff', fontWeight: '800', fontSize: FontSize.sm }}>{t('settings.monthBalance')}</Text>
               <Text style={{ color: '#fff', fontWeight: '800', fontSize: FontSize.xl }}>+2 500 {settings.currency || '\u20ac'}</Text>
             </View>
             <View style={{ flexDirection: 'row', padding: Spacing.sm, gap: Spacing.xs }}>
@@ -206,9 +229,33 @@ const SettingsScreen = () => {
             <Text style={{ color: C.textMuted }}>1.0.0</Text>
           </View>
           <View style={styles.row}>
-            <Text style={[styles.rowText, { color: C.textPrimary, flex: 1 }]}>Thème</Text>
-            <Text style={{ color: C.textMuted }}>{isDark ? 'Sombre' : 'Clair'}</Text>
+            <Text style={[styles.rowText, { color: C.textPrimary, flex: 1 }]}>{t('settings.theme')}</Text>
+            <Text style={{ color: C.textMuted }}>{isDark ? t('settings.themeDark') : t('settings.themeLight')}</Text>
           </View>
+        </View>
+
+        {/* Données */}
+        <SectionTitle text={t('settings.data')} />
+        <View style={[styles.card, { backgroundColor: C.card }]}>
+          {[
+            { format: 'csv', label: t('settings.exportCsv'), hint: t('settings.exportCsvHint'), icon: '📊' },
+            { format: 'json', label: t('settings.exportJson'), hint: t('settings.exportJsonHint'), icon: '🗄' },
+          ].map((entry, index) => (
+            <TouchableOpacity
+              key={entry.format}
+              style={[styles.row, index === 0 && { borderBottomWidth: 1, borderBottomColor: C.borderLight }]}
+              onPress={() => handleExport(entry.format)}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={entry.label}
+            >
+              <Text style={{ fontSize: 22, marginRight: Spacing.sm }}>{entry.icon}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: C.textPrimary, fontWeight: '700', fontSize: FontSize.md }}>{entry.label}</Text>
+                <Text style={{ color: C.textMuted, fontSize: FontSize.xs, marginTop: 1 }}>{entry.hint}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
         </View>
 
         {/* Reset */}

@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { renderWithProviders } from '../testSupport/renderWithProviders';
 import * as storage from '../storage/storage';
 import AddIncomeScreen from './AddIncomeScreen';
+import { formatDate } from '../utils/format';
 
 const mockNavigation = { goBack: jest.fn() };
 const mockRoute = { params: {} };
@@ -89,7 +90,7 @@ describe('AddIncomeScreen', () => {
 
       await waitFor(() => expect(getByDisplayValue('100')).toBeTruthy());
       expect(getByDisplayValue('Prime')).toBeTruthy();
-      expect(getByDisplayValue('2026-09-01')).toBeTruthy();
+      expect(getByText(formatDate('2026-09-01', 'fr'))).toBeTruthy();
       expect(getByText('Modifier')).toBeTruthy();
     });
 

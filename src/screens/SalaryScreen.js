@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
+import { useFormat } from '../hooks/useFormat';
 import { Colors, Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
 import { useTheme } from '../theme/ThemeContext';
 import { parsePositiveAmount } from '../utils/money';
@@ -28,7 +29,7 @@ const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9
 
 // ─── Modal salaire global ────────────────────────────────────────────────────
 
-const GlobalSalaryModal = ({ visible, onClose, onSave, initial, C, styles }) => {
+const GlobalSalaryModal = ({ visible, onClose, onSave, initial, C, styles, t }) => {
   const [amount, setAmount] = useState('');
   const [label, setLabel] = useState('');
 
@@ -43,7 +44,7 @@ const GlobalSalaryModal = ({ visible, onClose, onSave, initial, C, styles }) => 
   const handleSave = () => {
     const val = parsePositiveAmount(amount);
     if (val === null) {
-      Alert.alert('Erreur', 'Veuillez entrer un montant valide.');
+      Alert.alert(t('salary.invalidAmountTitle'), t('salary.invalidAmountMessage'));
       return;
     }
     onSave({ id: 'global', amount: String(val), label: label.trim() });
@@ -58,35 +59,35 @@ const GlobalSalaryModal = ({ visible, onClose, onSave, initial, C, styles }) => 
       >
         <View style={styles.modalSheet}>
           <Text style={styles.modalTitle}>
-            {initial ? 'Modifier le salaire global' : 'Définir un salaire global'}
+            {initial ? t('salary.editGlobal') : t('salary.createGlobal')}
           </Text>
 
-          <Text style={styles.inputLabel}>Montant mensuel</Text>
+          <Text style={styles.inputLabel}>{t('salary.monthlyAmount')}</Text>
           <TextInput
             style={styles.input}
             value={amount}
             onChangeText={setAmount}
-            placeholder="ex: 3000"
+            placeholder={t('salary.amountPlaceholder')}
             placeholderTextColor={C.textMuted}
             keyboardType="numeric"
             autoFocus
           />
 
-          <Text style={styles.inputLabel}>Note (optionnel)</Text>
+          <Text style={styles.inputLabel}>{t('salary.note')}</Text>
           <TextInput
             style={styles.input}
             value={label}
             onChangeText={setLabel}
-            placeholder="ex: Salaire CDI"
+            placeholder={t('salary.notePlaceholder')}
             placeholderTextColor={C.textMuted}
           />
 
           <View style={styles.modalActions}>
             <TouchableOpacity style={styles.btnCancel} onPress={onClose}>
-              <Text style={styles.btnCancelText}>Annuler</Text>
+              <Text style={styles.btnCancelText}>{t('common.cancel')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.btnSave} onPress={handleSave}>
-              <Text style={styles.btnSaveText}>Enregistrer</Text>
+              <Text style={styles.btnSaveText}>{t('common.save')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -114,6 +115,7 @@ const SalaryScreen = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState('salary');
   const [globalModalVisible, setGlobalModalVisible] = useState(false);
   const { colors: C } = useTheme();
+  const { money } = useFormat();
   const styles = makeStyles(C);
   const cur = settings.currency || '€';
 
@@ -125,33 +127,33 @@ const SalaryScreen = ({ navigation }) => {
 
   const handleDeleteGlobal = () => {
     if (Platform.OS === 'web') {
-      if (window.confirm('Supprimer le salaire global ?')) removeGlobalSalary();
+      if (window.confirm(t('salary.deleteMessage'))) removeGlobalSalary();
     } else {
-      Alert.alert('Supprimer', 'Confirmer ?', [
-        { text: 'Annuler', style: 'cancel' },
-        { text: 'Supprimer', style: 'destructive', onPress: removeGlobalSalary },
+      Alert.alert(t('salary.deleteTitle'), t('salary.deleteMessage'), [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('common.delete'), style: 'destructive', onPress: removeGlobalSalary },
       ]);
     }
   };
 
   const handleDeleteMonthly = (id) => {
     if (Platform.OS === 'web') {
-      if (window.confirm('Supprimer ce salaire mensuel ?')) removeMonthlySalary(id);
+      if (window.confirm(t('salary.deleteMessage'))) removeMonthlySalary(id);
     } else {
-      Alert.alert('Supprimer', 'Confirmer ?', [
-        { text: 'Annuler', style: 'cancel' },
-        { text: 'Supprimer', style: 'destructive', onPress: () => removeMonthlySalary(id) },
+      Alert.alert(t('salary.deleteTitle'), t('salary.deleteMessage'), [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('common.delete'), style: 'destructive', onPress: () => removeMonthlySalary(id) },
       ]);
     }
   };
 
   const handleDeleteIncome = (id) => {
     if (Platform.OS === 'web') {
-      if (window.confirm('Supprimer ce revenu ?')) removeIncome(id);
+      if (window.confirm(t('salary.deleteMessage'))) removeIncome(id);
     } else {
-      Alert.alert('Supprimer', 'Confirmer ?', [
-        { text: 'Annuler', style: 'cancel' },
-        { text: 'Supprimer', style: 'destructive', onPress: () => removeIncome(id) },
+      Alert.alert(t('salary.deleteTitle'), t('salary.deleteMessage'), [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('common.delete'), style: 'destructive', onPress: () => removeIncome(id) },
       ]);
     }
   };
@@ -173,21 +175,21 @@ const SalaryScreen = ({ navigation }) => {
 
   const typeBadgeLabel =
     currentMonthSalary.type === 'monthly'
-      ? 'MENSUEL'
+      ? t('salary.monthly')
       : currentMonthSalary.type === 'global'
-      ? 'GLOBAL'
-      : 'NON DÉFINI';
+      ? t('salary.global')
+      : t('salary.undefined');
 
   // ─── Section salaire global ──────────────────────────────────────────────────
 
   const renderGlobalSection = () => (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Salaire global</Text>
+      <Text style={styles.sectionTitle}>{t('salary.globalTitle')}</Text>
       {globalSalary ? (
         <View style={styles.globalCard}>
           <View style={styles.globalLeft}>
             <Text style={styles.globalAmount}>
-              {parseFloat(globalSalary.amount).toFixed(2)} {cur}
+              {money(globalSalary.amount)}
             </Text>
             {globalSalary.label ? (
               <Text style={styles.globalLabel}>{globalSalary.label}</Text>
@@ -198,7 +200,7 @@ const SalaryScreen = ({ navigation }) => {
               style={[styles.actionBtn, styles.actionBtnEdit]}
               onPress={() => setGlobalModalVisible(true)}
               accessibilityRole="button"
-              accessibilityLabel="Modifier le salaire global"
+              accessibilityLabel={t('salary.editGlobal')}
               hitSlop={HIT_SLOP}
             >
               <Text style={styles.actionEdit}>✏️</Text>
@@ -207,7 +209,7 @@ const SalaryScreen = ({ navigation }) => {
               style={[styles.actionBtn, styles.actionBtnDelete]}
               onPress={handleDeleteGlobal}
               accessibilityRole="button"
-              accessibilityLabel="Supprimer le salaire global"
+              accessibilityLabel={t('salary.deleteGlobalLabel')}
               hitSlop={HIT_SLOP}
             >
               <Text style={styles.actionDelete}>✕</Text>
@@ -219,7 +221,7 @@ const SalaryScreen = ({ navigation }) => {
           style={styles.addGlobalBtn}
           onPress={() => setGlobalModalVisible(true)}
         >
-          <Text style={styles.addGlobalBtnText}>+ Définir un salaire global</Text>
+          <Text style={styles.addGlobalBtnText}>{t('salary.defineGlobal')}</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -237,7 +239,7 @@ const SalaryScreen = ({ navigation }) => {
           <Text style={styles.monthlyPeriod}>
             {months[item.month]} {item.year}
             {isCurrentMonth && (
-              <Text style={styles.currentTag}> · ce mois</Text>
+              <Text style={styles.currentTag}>{t('salary.currentMonthTag')}</Text>
             )}
           </Text>
           {item.label ? (
@@ -245,7 +247,7 @@ const SalaryScreen = ({ navigation }) => {
           ) : null}
         </View>
         <Text style={[styles.monthlyAmount, { color: C.success }]}>
-          {parseFloat(item.amount).toFixed(2)} {cur}
+          {money(item.amount)}
         </Text>
         <View style={styles.monthlyActions}>
           <TouchableOpacity
@@ -293,7 +295,7 @@ const SalaryScreen = ({ navigation }) => {
       </View>
       <View style={styles.incomeRight}>
         <Text style={[styles.incomeAmount, { color: C.success }]}>
-          +{parseFloat(item.amount).toFixed(2)} {cur}
+          {money(item.amount, { signDisplay: 'always' })}
         </Text>
         {item.date ? (
           <Text style={styles.incomeDate}>{item.date}</Text>
@@ -303,7 +305,7 @@ const SalaryScreen = ({ navigation }) => {
         onPress={() => navigation.navigate('AddIncome', { editItem: item })}
         style={[styles.actionBtn, styles.actionBtnEdit]}
         accessibilityRole="button"
-        accessibilityLabel="Modifier ce revenu"
+        accessibilityLabel={t('salary.editIncome')}
         hitSlop={HIT_SLOP}
       >
         <Text style={styles.actionEdit}>✏️</Text>
@@ -312,7 +314,7 @@ const SalaryScreen = ({ navigation }) => {
         onPress={() => handleDeleteIncome(item.id)}
         style={[styles.actionBtn, styles.actionBtnDelete]}
         accessibilityRole="button"
-        accessibilityLabel="Supprimer ce revenu"
+        accessibilityLabel={t('salary.deleteIncome')}
         hitSlop={HIT_SLOP}
       >
         <Text style={styles.actionDelete}>✕</Text>
@@ -326,9 +328,9 @@ const SalaryScreen = ({ navigation }) => {
     <>
       {/* Active salary summary */}
       <LinearGradient colors={C.gradientPrimary} style={styles.header}>
-        <Text style={styles.headerLabel}>Salaire actif ce mois-ci</Text>
+        <Text style={styles.headerLabel}>{t('salary.activeThisMonth')}</Text>
         <Text style={styles.headerAmount}>
-          {currentMonthSalary.amount.toFixed(2)} {cur}
+          {money(currentMonthSalary.amount)}
         </Text>
         <View style={[styles.typeBadge, { backgroundColor: typeBadgeColor + '33' }]}>
           <Text style={[styles.typeBadgeText, { color: typeBadgeColor }]}>
@@ -344,7 +346,7 @@ const SalaryScreen = ({ navigation }) => {
           onPress={() => setActiveTab('salary')}
         >
           <Text style={[styles.tabText, activeTab === 'salary' && styles.tabTextActive]}>
-            Salaires
+            {t('salary.salariesTab')}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -352,7 +354,7 @@ const SalaryScreen = ({ navigation }) => {
           onPress={() => setActiveTab('income')}
         >
           <Text style={[styles.tabText, activeTab === 'income' && styles.tabTextActive]}>
-            Revenus suppl.
+            {t('salary.additionalTab')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -360,7 +362,7 @@ const SalaryScreen = ({ navigation }) => {
       {renderGlobalSection()}
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Salaires mensuels</Text>
+        <Text style={styles.sectionTitle}>{t('salary.monthlyTitle')}</Text>
       </View>
     </>
   );
@@ -373,9 +375,9 @@ const SalaryScreen = ({ navigation }) => {
           {sortedMonthly.length === 0 ? (
             <View style={styles.emptyWrap}>
               <Text style={styles.emptyIcon}>📅</Text>
-              <Text style={styles.emptyText}>Aucun salaire mensuel défini</Text>
+              <Text style={styles.emptyText}>{t('salary.noMonthly')}</Text>
               <Text style={styles.emptyHint}>
-                Utilisez le bouton + pour ajouter un salaire spécifique à un mois.
+                {t('salary.noMonthlyHint')}
               </Text>
             </View>
           ) : (
@@ -391,9 +393,9 @@ const SalaryScreen = ({ navigation }) => {
           ListHeaderComponent={
             <>
               <LinearGradient colors={C.gradientPrimary} style={styles.header}>
-                <Text style={styles.headerLabel}>Salaire actif ce mois-ci</Text>
+                <Text style={styles.headerLabel}>{t('salary.activeThisMonth')}</Text>
                 <Text style={styles.headerAmount}>
-                  {currentMonthSalary.amount.toFixed(2)} {cur}
+                  {money(currentMonthSalary.amount)}
                 </Text>
                 <View style={[styles.typeBadge, { backgroundColor: typeBadgeColor + '33' }]}>
                   <Text style={[styles.typeBadgeText, { color: typeBadgeColor }]}>
@@ -408,7 +410,7 @@ const SalaryScreen = ({ navigation }) => {
                   onPress={() => setActiveTab('salary')}
                 >
                   <Text style={[styles.tabText, activeTab === 'salary' && styles.tabTextActive]}>
-                    Salaires
+                    {t('salary.salariesTab')}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -416,23 +418,19 @@ const SalaryScreen = ({ navigation }) => {
                   onPress={() => setActiveTab('income')}
                 >
                   <Text style={[styles.tabText, activeTab === 'income' && styles.tabTextActive]}>
-                    Revenus suppl.
+                    {t('salary.additionalTab')}
                   </Text>
                 </TouchableOpacity>
               </View>
 
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>
-                  Bonus, freelance &amp; autres revenus
+                  {t('salary.additionalTitle')}
                 </Text>
                 {income.length > 0 && (
                   <View style={styles.totalBadge}>
                     <Text style={styles.totalBadgeText}>
-                      Total :{' '}
-                      {income
-                        .reduce((s, i) => s + parseFloat(i.amount || 0), 0)
-                        .toFixed(2)}{' '}
-                      {cur}
+                      {t('common.total')} : {money(income.reduce((s, i) => s + parseFloat(i.amount || 0), 0))}
                     </Text>
                   </View>
                 )}
@@ -444,9 +442,9 @@ const SalaryScreen = ({ navigation }) => {
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
               <Text style={styles.emptyIcon}>💼</Text>
-              <Text style={styles.emptyText}>Aucun revenu supplémentaire</Text>
+              <Text style={styles.emptyText}>{t('salary.noAdditional')}</Text>
               <Text style={styles.emptyHint}>
-                Ajoutez bonus, freelance ou autres revenus via le bouton +.
+                {t('salary.noAdditionalHint')}
               </Text>
             </View>
           }
@@ -478,6 +476,7 @@ const SalaryScreen = ({ navigation }) => {
         initial={globalSalary}
         C={C}
         styles={styles}
+        t={t}
       />
     </SafeAreaView>
   );

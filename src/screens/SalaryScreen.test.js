@@ -5,6 +5,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as storage from '../storage/storage';
 import { renderWithProviders } from '../testSupport/renderWithProviders';
 import SalaryScreen from './SalaryScreen';
+import { formatCurrency } from '../utils/format';
+
+const money = (value) => formatCurrency(value, 'EUR', 'fr');
 
 const mockNavigation = { navigate: jest.fn() };
 
@@ -30,13 +33,13 @@ describe('SalaryScreen', () => {
     await waitFor(async () => expect(storage.getGlobalSalary()).resolves.toEqual({
       id: 'global', amount: '3100.5', label: 'CDI',
     }));
-    expect(getAllByText('3100.50 €')).toHaveLength(2);
+    expect(getAllByText(money(3100.5))).toHaveLength(2);
   });
 
   it('pre-fills and updates an existing global salary from the edit action', async () => {
     await storage.saveGlobalSalary({ id: 'global', amount: '2000', label: 'Old' });
     const { getByDisplayValue, getAllByText, getByLabelText, getByText } = renderScreen();
-    await waitFor(() => expect(getAllByText('2000.00 €')).toHaveLength(2));
+    await waitFor(() => expect(getAllByText(money(2000))).toHaveLength(2));
 
     fireEvent.press(getByLabelText('Modifier le salaire global'));
     expect(getByDisplayValue('2000')).toBeTruthy();
@@ -70,7 +73,7 @@ describe('SalaryScreen', () => {
     await storage.saveGlobalSalary({ id: 'global', amount: '2000' });
     const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
     const { getAllByText, getByText } = renderScreen();
-    await waitFor(() => expect(getAllByText('2000.00 €')).toHaveLength(2));
+    await waitFor(() => expect(getAllByText(money(2000))).toHaveLength(2));
 
     fireEvent.press(getByText('✕'));
     expect(alert).toHaveBeenCalledWith(

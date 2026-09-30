@@ -6,9 +6,15 @@ import i18n from '../locales/i18n';
 import * as storage from '../storage/storage';
 import { renderWithProviders } from '../testSupport/renderWithProviders';
 import SettingsScreen from './SettingsScreen';
+import { shareExport } from '../services/shareExport';
+
+jest.mock('../services/shareExport', () => ({
+  shareExport: jest.fn().mockResolvedValue(undefined),
+}));
 
 beforeEach(async () => {
   AsyncStorage.reset();
+  shareExport.mockClear();
   await i18n.changeLanguage('fr');
 });
 
@@ -112,4 +118,26 @@ it('masque entierement le mode test hors developpement', async () => {
   } finally {
     global.__DEV__ = true;
   }
+});
+
+it.each([
+  ['Exporter en CSV', 'csv'],
+  ['Exporter en JSON', 'json'],
+])('déclenche l export %p', async (label, format) => {
+  await storage.saveVariableExpenses([
+    { id: 'e1', amount: '12', category: 'food', date: '2026-09-02' },
+  ]);
+  const { getByLabelText, getByText } = renderWithProviders(<SettingsScreen />);
+  await waitFor(() => expect(getByText('Données')).toBeTruthy());
+
+  fireEvent.press(getByLabelText(label));
+
+  await waitFor(() => expect(shareExport).toHaveBeenCalledTimes(1));
+  expect(shareExport).toHaveBeenCalledWith(
+    format,
+    expect.objectContaining({
+      variableExpenses: [expect.objectContaining({ id: 'e1' })],
+      settings: expect.objectContaining({ currency: expect.any(String) }),
+    })
+  );
 });

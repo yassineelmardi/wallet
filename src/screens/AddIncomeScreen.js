@@ -14,6 +14,7 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
+import DateField from '../components/DateField';
 import { Colors, Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
 import { useTheme } from '../theme/ThemeContext';
 import { parsePositiveAmount } from '../utils/money';
@@ -116,12 +117,10 @@ const AddIncomeScreen = () => {
 
           {/* Date */}
           <Text style={styles.label}>{t('income.date')}</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="YYYY-MM-DD"
-            placeholderTextColor={C.textMuted}
+          <DateField
             value={date}
-            onChangeText={setDate}
+            onChange={setDate}
+            accessibilityLabel={t('income.date')}
           />
 
         </ScrollView>
