@@ -16,6 +16,8 @@ import SettingsScreen from '../screens/SettingsScreen';
 import AddIncomeScreen from '../screens/AddIncomeScreen';
 import AddExpenseScreen from '../screens/AddExpenseScreen';
 import AddMonthlySalaryScreen from '../screens/AddMonthlySalaryScreen';
+import AnalyticsScreen from '../screens/AnalyticsScreen';
+import HistoryScreen from '../screens/HistoryScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -117,6 +119,8 @@ const AppNavigator = () => {
           component={AddMonthlySalaryScreen}
           options={{ presentation: 'modal' }}
         />
+        <Stack.Screen name="Analytics" component={AnalyticsScreen} />
+        <Stack.Screen name="History" component={HistoryScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

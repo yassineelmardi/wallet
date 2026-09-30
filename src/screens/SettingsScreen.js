@@ -107,8 +107,8 @@ const SettingsScreen = () => {
                   <Text style={{ color: C.textMuted, fontSize: FontSize.xs, marginTop: 1 }}>{palette.desc}</Text>
                 </View>
                 <View style={{ flexDirection: 'row', gap: 4, marginRight: Spacing.sm }}>
-                  {[swatch.primary, swatch.success, swatch.accentWarn].map((col) => (
-                    <View key={col} style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: col }} />
+                  {[swatch.primary, swatch.success, swatch.accentWarn].map((col, index) => (
+                    <View key={`${palette.id}-${index}`} style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: col }} />
                   ))}
                 </View>
                 {active && (

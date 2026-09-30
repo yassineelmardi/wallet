@@ -1,11 +1,29 @@
 import React from 'react';
-import { waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as storage from '../storage/storage';
 import { renderWithProviders } from '../testSupport/renderWithProviders';
 import StatsScreen from './StatsScreen';
 
-beforeEach(() => AsyncStorage.reset());
+const mockNavigation = { navigate: jest.fn() };
+
+jest.mock('@react-navigation/native', () => ({
+  useNavigation: () => mockNavigation,
+}));
+
+beforeEach(() => {
+  AsyncStorage.reset();
+  mockNavigation.navigate.mockClear();
+});
+
+it('ouvre les analyses avancees', async () => {
+  const { getByLabelText } = renderWithProviders(<StatsScreen />);
+  await waitFor(() => expect(getByLabelText('Analyses avancées')).toBeTruthy());
+
+  fireEvent.press(getByLabelText('Analyses avancées'));
+
+  expect(mockNavigation.navigate).toHaveBeenCalledWith('Analytics');
+});
 
 it('aggregates expenses by category and calculates budget usage', async () => {
   await storage.saveGlobalSalary({ id: 'global', amount: '1000' });

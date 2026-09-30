@@ -19,11 +19,7 @@ import { useApp } from '../context/AppContext';
 import { Colors, Spacing, BorderRadius, FontSize, Shadow } from '../theme/colors';
 import { useTheme } from '../theme/ThemeContext';
 import { parsePositiveAmount } from '../utils/money';
-
-const MONTHS = [
-  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
-];
+import { MONTHS } from '../utils/period';
 
 // Ajoute la marge tactile manquante pour atteindre les 44px recommandés.
 const HIT_SLOP = { top: 6, bottom: 6, left: 6, right: 6 };

@@ -84,6 +84,27 @@ export default {
       about: 'À propos',
       version: 'Version',
     },
+    // Analytics
+    analytics: {
+      title: 'Analyses',
+      byMonth: 'Par mois',
+      byYear: 'Par année',
+      totalExpenses: 'Dépenses',
+      totalIncome: 'Revenus',
+      monthlyAverage: 'Moyenne mensuelle',
+      largestExpense: 'Plus grosse dépense',
+      transactionCount: 'Transactions',
+      comparison: 'Comparaison',
+      trend: 'Dépenses {{year}}',
+      byCategory: 'Par catégorie',
+      noData: 'Aucune donnée sur cette période',
+      fixedNotice: 'Les charges fixes ne sont pas datées : elles ne figurent pas dans l\'historique.',
+      open: 'Analyses avancées',
+    },
+    history: {
+      title: 'Historique',
+      empty: 'Aucune transaction en {{period}}',
+    },
     // Commun
     common: {
       save: 'Enregistrer',
