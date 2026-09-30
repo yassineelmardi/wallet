@@ -39,7 +39,7 @@ describe('ExpensesScreen', () => {
     const { getAllByText, getByText } = renderWithProviders(<ExpensesScreen />);
     await waitFor(() => expect(getAllByText('-12.00 €')).toHaveLength(2));
 
-    fireEvent.press(getByText('\\u2715'));
+    fireEvent.press(getByText('✕'));
     expect(alert).toHaveBeenCalledWith(
       'Confirmer',
       'Supprimer cette dépense ?',
@@ -62,7 +62,7 @@ describe('ExpensesScreen', () => {
     await waitFor(() => expect(getByText('Charges fixes')).toBeTruthy());
 
     fireEvent.press(getByText('Charges fixes'));
-    fireEvent.press(getByText('\\u2715'));
+    fireEvent.press(getByText('✕'));
     const remove = alert.mock.calls[0][2].find((button) => button.text === 'Supprimer');
     await act(async () => remove.onPress());
 

@@ -110,7 +110,7 @@ const StatsScreen = () => {
 
         {totalIncome === 0 && totalExpenses === 0 && (
           <View style={{ alignItems:'center', marginTop:80 }}>
-            <Text style={{ fontSize:48, marginBottom: Spacing.md }}>\ud83d\udcca</Text>
+            <Text style={{ fontSize:48, marginBottom: Spacing.md }}>📊</Text>
             <Text style={{ color: C.textMuted, fontSize: FontSize.md }}>{t('dashboard.noData')}</Text>
           </View>
         )}

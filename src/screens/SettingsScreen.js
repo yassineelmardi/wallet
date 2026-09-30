@@ -52,7 +52,7 @@ const SettingsScreen = () => {
         </View>
 
         {/* Theme picker */}
-        <SectionTitle text="Th\u00e8me" />
+        <SectionTitle text="Thème" />
         <View style={[styles.card, { backgroundColor: C.card }]}>
           {THEMES.map((th, i) => {
             const active = themeMode === th.key;
@@ -74,7 +74,7 @@ const SettingsScreen = () => {
                 </View>
                 {active && (
                   <View style={[styles.activeDot, { backgroundColor: C.primary }]}>
-                    <Text style={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>\u2713</Text>
+                    <Text style={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>✓</Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -84,7 +84,7 @@ const SettingsScreen = () => {
 
         {/* Preview */}
         <View style={[styles.previewCard, { backgroundColor: C.card, borderColor: C.border }]}>
-          <Text style={{ color: C.textMuted, fontSize: FontSize.xs, fontWeight: '600', marginBottom: Spacing.sm }}>APERçU DU TH\u00c8ME ACTIF</Text>
+          <Text style={{ color: C.textMuted, fontSize: FontSize.xs, fontWeight: '600', marginBottom: Spacing.sm }}>APERÇU DU THÈME ACTIF</Text>
           <View style={[styles.previewInner, { backgroundColor: isDark ? '#0A0E1A' : '#F2F5FC' }]}>
             <View style={[styles.previewHero, { backgroundColor: C.primary }]}>
               <Text style={{ color: '#fff', fontWeight: '800', fontSize: FontSize.sm }}>Solde du mois</Text>
@@ -116,7 +116,7 @@ const SettingsScreen = () => {
               >
                 <Text style={{ fontSize: 22, marginRight: Spacing.sm }}>{lang.flag}</Text>
                 <Text style={[styles.rowText, { color: active ? C.primary : C.textPrimary, flex: 1 }]}>{lang.label}</Text>
-                {active && <Text style={{ color: C.primary, fontWeight: '800' }}>\u2713</Text>}
+                {active && <Text style={{ color: C.primary, fontWeight: '800' }}>✓</Text>}
               </TouchableOpacity>
             );
           })}
@@ -150,7 +150,7 @@ const SettingsScreen = () => {
             <Text style={{ color: C.textMuted }}>1.0.0</Text>
           </View>
           <View style={styles.row}>
-            <Text style={[styles.rowText, { color: C.textPrimary, flex: 1 }]}>Th\u00e8me</Text>
+            <Text style={[styles.rowText, { color: C.textPrimary, flex: 1 }]}>Thème</Text>
             <Text style={{ color: C.textMuted }}>{isDark ? 'Sombre' : 'Clair'}</Text>
           </View>
         </View>

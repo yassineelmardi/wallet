@@ -57,7 +57,7 @@ const ExpensesScreen = () => {
           -{parseFloat(item.amount).toFixed(2)} {cur}
         </Text>
         <TouchableOpacity onPress={() => handleDelete(item.id)} style={{ padding: 4, marginTop: 2 }}>
-          <Text style={{ color: C.error, fontSize: 13 }}>\u2715</Text>
+          <Text style={{ color: C.error, fontSize: 13 }}>✕</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -103,7 +103,7 @@ const ExpensesScreen = () => {
         contentContainerStyle={{ padding: Spacing.md, paddingBottom: 100 }}
         ListEmptyComponent={
           <View style={{ alignItems: 'center', marginTop: 80 }}>
-            <Text style={{ fontSize: 48, marginBottom: Spacing.md }}>\ud83d\udcad</Text>
+            <Text style={{ fontSize: 48, marginBottom: Spacing.md }}>💭</Text>
             <Text style={{ color: C.textSecondary, fontSize: FontSize.md, fontWeight: '600' }}>{t('expenses.noExpenses')}</Text>
           </View>
         }
