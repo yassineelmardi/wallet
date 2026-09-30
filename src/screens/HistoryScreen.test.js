@@ -93,4 +93,14 @@ describe('HistoryScreen', () => {
     await waitFor(() => expect(getByText('Salaire')).toBeTruthy());
     expect(getAllByText('+2500.00 €').length).toBeGreaterThan(0);
   });
+
+  it('traduit les categories de revenus depuis leur propre espace de cles', async () => {
+    await storage.saveIncome([
+      { id: 'i1', amount: '300', category: 'bonus', date: iso(today, '08') },
+    ]);
+    const { getByText } = renderWithProviders(<HistoryScreen />);
+
+    await waitFor(() => expect(getByText('Bonus')).toBeTruthy());
+    expect(getByText(`Bonus · ${iso(today, '08')}`)).toBeTruthy();
+  });
 });

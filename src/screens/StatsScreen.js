@@ -60,7 +60,8 @@ const StatsScreen = () => {
         {/* Overview grid */}
         <Text style={{ color: C.textMuted, fontSize: FontSize.xs, fontWeight:'700', textTransform:'uppercase', letterSpacing:1, marginBottom: Spacing.sm }}>
           {t('stats.overview')}
-        </Text>        <View style={{ flexDirection:'row', flexWrap:'wrap', gap: Spacing.sm, marginBottom: Spacing.sm }}>
+        </Text>
+        <View style={{ flexDirection:'row', flexWrap:'wrap', gap: Spacing.sm, marginBottom: Spacing.sm }}>
           {overviewData.map((item) => (
             <View key={item.label} style={{ flex:1, minWidth:'45%', backgroundColor: C.card, borderRadius: BorderRadius.lg, padding: Spacing.md, borderTopWidth:3, borderTopColor: item.color, ...Shadow.sm }}>
               <Text style={{ color: C.textSecondary, fontSize: FontSize.xs, marginBottom: Spacing.xs }}>{item.label}</Text>

@@ -69,7 +69,10 @@ const HistoryScreen = () => {
   const renderItem = ({ item }) => {
     const isExpense = item.type === 'expense';
     const tone = isExpense ? C.accentWarn : C.success;
-    const label = item.description || t(`expenses.categories.${item.category}`, item.category);
+    const categoryLabel = isExpense
+      ? t(`expenses.categories.${item.category}`, item.category)
+      : t(`income.${item.category}`, item.category);
+    const label = item.description || categoryLabel;
     return (
       <View style={[styles.row, { backgroundColor: C.card }]}>
         <View style={{ flex: 1 }}>
@@ -77,7 +80,7 @@ const HistoryScreen = () => {
             {label}
           </Text>
           <Text style={{ color: C.textMuted, fontSize: FontSize.xs, marginTop: 2 }}>
-            {t(`expenses.categories.${item.category}`, item.category)} · {item.date}
+            {categoryLabel} · {item.date}
           </Text>
         </View>
         <Text style={{ color: tone, fontWeight: '700', fontSize: FontSize.md }}>
