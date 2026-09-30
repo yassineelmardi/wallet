@@ -6,7 +6,7 @@ import { renderWithProviders } from '../testSupport/renderWithProviders';
 import AnalyticsScreen from './AnalyticsScreen';
 import { currentPeriod, formatPeriod, shiftMonth } from '../utils/period';
 
-const mockNavigation = { navigate: jest.fn() };
+const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
 
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => mockNavigation,
@@ -20,6 +20,16 @@ describe('AnalyticsScreen', () => {
   beforeEach(() => {
     AsyncStorage.reset();
     mockNavigation.navigate.mockClear();
+    mockNavigation.goBack.mockClear();
+  });
+
+  it('revient a l ecran precedent', async () => {
+    const { getByLabelText } = renderWithProviders(<AnalyticsScreen />);
+    await waitFor(() => expect(getByLabelText('Retour')).toBeTruthy());
+
+    fireEvent.press(getByLabelText('Retour'));
+
+    expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
   });
 
   it('affiche les indicateurs du mois courant', async () => {

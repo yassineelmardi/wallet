@@ -9,6 +9,7 @@ import ComparisonCard from '../components/ComparisonCard';
 import ExpenseCategoryChart from '../components/ExpenseCategoryChart';
 import ExpenseTrendChart from '../components/ExpenseTrendChart';
 import MonthSelector from '../components/MonthSelector';
+import ScreenHeader from '../components/ScreenHeader';
 import StatisticsCard from '../components/StatisticsCard';
 import YearSelector from '../components/YearSelector';
 import {
@@ -75,9 +76,8 @@ const AnalyticsScreen = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: C.background }}>
+      <ScreenHeader title={t('analytics.title')} onBack={() => navigation.goBack()} />
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <Text style={[styles.title, { color: C.textPrimary }]}>{t('analytics.title')}</Text>
-
         <View style={[styles.tabs, { backgroundColor: C.surface }]}>
           {[
             { key: 'month', label: t('analytics.byMonth') },
@@ -210,7 +210,6 @@ const AnalyticsScreen = () => {
 
 const styles = StyleSheet.create({
   scroll: { padding: Spacing.md, paddingBottom: Spacing.xxl },
-  title: { fontSize: FontSize.xxl, fontWeight: '800', marginTop: Spacing.md, marginBottom: Spacing.md },
   tabs: { flexDirection: 'row', borderRadius: BorderRadius.lg, padding: 4, marginBottom: Spacing.md },
   tab: { flex: 1, paddingVertical: Spacing.sm, alignItems: 'center', borderRadius: BorderRadius.md },
   selector: { marginBottom: Spacing.md },

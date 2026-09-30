@@ -1,16 +1,19 @@
 import React, { useMemo, useState } from 'react';
 import { SafeAreaView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
 import { useTheme } from '../theme/ThemeContext';
 import { BorderRadius, FontSize, Shadow, Spacing } from '../theme/colors';
 import MonthSelector from '../components/MonthSelector';
+import ScreenHeader from '../components/ScreenHeader';
 import YearSelector from '../components/YearSelector';
 import { buildTransactions, filterByMonth, filterByYear } from '../services/analytics';
 import { currentPeriod, formatPeriod, monthLabel } from '../utils/period';
 
 const HistoryScreen = () => {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const { colors: C } = useTheme();
   const { income, variableExpenses, monthlySalaries, settings } = useApp();
   const cur = settings.currency || '€';
@@ -86,9 +89,8 @@ const HistoryScreen = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: C.background }}>
+      <ScreenHeader title={t('history.title')} onBack={() => navigation.goBack()} />
       <View style={styles.header}>
-        <Text style={[styles.title, { color: C.textPrimary }]}>{t('history.title')}</Text>
-
         <View style={[styles.tabs, { backgroundColor: C.surface }]}>
           {[
             { key: 'month', label: t('analytics.byMonth') },
@@ -152,8 +154,7 @@ const HistoryScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  header: { paddingHorizontal: Spacing.md, paddingTop: Spacing.md },
-  title: { fontSize: FontSize.xxl, fontWeight: '800', marginBottom: Spacing.md },
+  header: { paddingHorizontal: Spacing.md },
   tabs: { flexDirection: 'row', borderRadius: BorderRadius.lg, padding: 4, marginBottom: Spacing.md },
   tab: { flex: 1, paddingVertical: Spacing.sm, alignItems: 'center', borderRadius: BorderRadius.md },
   totals: { flexDirection: 'row', justifyContent: 'space-between', marginTop: Spacing.md },

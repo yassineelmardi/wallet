@@ -101,6 +101,7 @@ export default {
     common: {
       save: 'Save',
       cancel: 'Cancel',
+      back: 'Back',
       delete: 'Delete',
       edit: 'Edit',
       confirm: 'Confirm',

@@ -10,8 +10,26 @@ const today = currentPeriod();
 const iso = ({ year, month }, day = '10') =>
   `${year}-${String(month + 1).padStart(2, '0')}-${day}`;
 
+const mockNavigation = { goBack: jest.fn() };
+
+jest.mock('@react-navigation/native', () => ({
+  useNavigation: () => mockNavigation,
+}));
+
 describe('HistoryScreen', () => {
-  beforeEach(() => AsyncStorage.reset());
+  beforeEach(() => {
+    AsyncStorage.reset();
+    mockNavigation.goBack.mockClear();
+  });
+
+  it('revient a l ecran precedent', async () => {
+    const { getByLabelText } = renderWithProviders(<HistoryScreen />);
+    await waitFor(() => expect(getByLabelText('Retour')).toBeTruthy());
+
+    fireEvent.press(getByLabelText('Retour'));
+
+    expect(mockNavigation.goBack).toHaveBeenCalledTimes(1);
+  });
 
   it('liste les transactions du mois courant avec les totaux', async () => {
     await storage.saveVariableExpenses([
