@@ -25,6 +25,9 @@ const MONTHS = [
   'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
 ];
 
+// Ajoute la marge tactile manquante pour atteindre les 44px recommandés.
+const HIT_SLOP = { top: 6, bottom: 6, left: 6, right: 6 };
+
 const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 // ─── Modal salaire global ────────────────────────────────────────────────────
@@ -196,12 +199,21 @@ const SalaryScreen = ({ navigation }) => {
           </View>
           <View style={styles.globalActions}>
             <TouchableOpacity
-              style={styles.actionBtn}
+              style={[styles.actionBtn, styles.actionBtnEdit]}
               onPress={() => setGlobalModalVisible(true)}
+              accessibilityRole="button"
+              accessibilityLabel="Modifier le salaire global"
+              hitSlop={HIT_SLOP}
             >
-              <Text style={styles.actionEdit}>✏</Text>
+              <Text style={styles.actionEdit}>✏️</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.actionBtn} onPress={handleDeleteGlobal}>
+            <TouchableOpacity
+              style={[styles.actionBtn, styles.actionBtnDelete]}
+              onPress={handleDeleteGlobal}
+              accessibilityRole="button"
+              accessibilityLabel="Supprimer le salaire global"
+              hitSlop={HIT_SLOP}
+            >
               <Text style={styles.actionDelete}>✕</Text>
             </TouchableOpacity>
           </View>
@@ -241,13 +253,19 @@ const SalaryScreen = ({ navigation }) => {
         <View style={styles.monthlyActions}>
           <TouchableOpacity
             onPress={() => navigation.navigate('AddMonthlySalary', { editItem: item })}
-            style={styles.actionBtn}
+            style={[styles.actionBtn, styles.actionBtnEdit]}
+            accessibilityRole="button"
+            accessibilityLabel={`Modifier le salaire de ${MONTHS[item.month]} ${item.year}`}
+            hitSlop={HIT_SLOP}
           >
-            <Text style={styles.actionEdit}>✏</Text>
+            <Text style={styles.actionEdit}>✏️</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => handleDeleteMonthly(item.id)}
-            style={styles.actionBtn}
+            style={[styles.actionBtn, styles.actionBtnDelete]}
+            accessibilityRole="button"
+            accessibilityLabel={`Supprimer le salaire de ${MONTHS[item.month]} ${item.year}`}
+            hitSlop={HIT_SLOP}
           >
             <Text style={styles.actionDelete}>✕</Text>
           </TouchableOpacity>
@@ -284,7 +302,13 @@ const SalaryScreen = ({ navigation }) => {
           <Text style={styles.incomeDate}>{item.date}</Text>
         ) : null}
       </View>
-      <TouchableOpacity onPress={() => handleDeleteIncome(item.id)} style={styles.actionBtn}>
+      <TouchableOpacity
+        onPress={() => handleDeleteIncome(item.id)}
+        style={[styles.actionBtn, styles.actionBtnDelete]}
+        accessibilityRole="button"
+        accessibilityLabel="Supprimer ce revenu"
+        hitSlop={HIT_SLOP}
+      >
         <Text style={styles.actionDelete}>✕</Text>
       </TouchableOpacity>
     </View>
@@ -521,7 +545,7 @@ const makeStyles = (C) => StyleSheet.create({
   globalLeft: { flex: 1 },
   globalAmount: { color: C.textPrimary, fontSize: FontSize.xl, fontWeight: '800' },
   globalLabel: { color: C.textMuted, fontSize: FontSize.xs, marginTop: 2 },
-  globalActions: { flexDirection: 'row', gap: Spacing.xs },
+  globalActions: { flexDirection: 'row', gap: Spacing.sm },
 
   // Add global button
   addGlobalBtn: {
@@ -552,7 +576,7 @@ const makeStyles = (C) => StyleSheet.create({
   currentTag: { color: C.accentYellow, fontSize: FontSize.xs },
   monthlyNote: { color: C.textMuted, fontSize: FontSize.xs, marginTop: 2 },
   monthlyAmount: { fontSize: FontSize.md, fontWeight: '700', marginRight: Spacing.sm },
-  monthlyActions: { flexDirection: 'row', gap: 4 },
+  monthlyActions: { flexDirection: 'row', gap: Spacing.sm },
 
   // Income card
   incomeCard: {
@@ -584,13 +608,16 @@ const makeStyles = (C) => StyleSheet.create({
 
   // Action buttons
   actionBtn: {
-    width: 30,
-    height: 30,
+    width: 38,
+    height: 38,
+    borderRadius: BorderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionEdit: { fontSize: 14, color: C.primary },
-  actionDelete: { fontSize: 14, color: C.error },
+  actionBtnEdit: { backgroundColor: C.primarySurface },
+  actionBtnDelete: { backgroundColor: C.accentWarnSurface },
+  actionEdit: { fontSize: 16 },
+  actionDelete: { fontSize: 15, color: C.error, fontWeight: '700' },
 
   // Empty states
   emptyWrap: { alignItems: 'center', paddingVertical: Spacing.xxl, paddingHorizontal: Spacing.xl },

@@ -35,10 +35,10 @@ describe('SalaryScreen', () => {
 
   it('pre-fills and updates an existing global salary from the edit action', async () => {
     await storage.saveGlobalSalary({ id: 'global', amount: '2000', label: 'Old' });
-    const { getByDisplayValue, getAllByText, getByText } = renderScreen();
+    const { getByDisplayValue, getAllByText, getByLabelText, getByText } = renderScreen();
     await waitFor(() => expect(getAllByText('2000.00 €')).toHaveLength(2));
 
-    fireEvent.press(getByText('✏'));
+    fireEvent.press(getByLabelText('Modifier le salaire global'));
     expect(getByDisplayValue('2000')).toBeTruthy();
     expect(getByDisplayValue('Old')).toBeTruthy();
     fireEvent.changeText(getByDisplayValue('2000'), '2100');
